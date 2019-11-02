@@ -1,0 +1,99 @@
+#!/bin/sh
+
+# set vars
+
+# population - 500, 1000, 5000, or 15000 
+
+POPULATION="15000"
+CITYFILE="/tmp/city.sql"
+REGIONFILE="/tmp/region.sql"
+CITYSQLFILE="/tmp/citysql.sql"
+CONFIGFILE="/usr/local/include/simpleconsulting.ini"
+
+# db vars
+
+USER=`awk -F"=" '/username/{gsub(/^[ \t]+/, "", $2); print $2}' $CONFIGFILE`
+DB=`awk -F"=" '/dbname/{gsub(/^[ \t]+/, "", $2); print $2}' $CONFIGFILE`
+HOST=`awk -F"=" '/host/{gsub(/^[ \t]+/, "", $2); print $2}' $CONFIGFILE`
+
+# begin transaction and set constraints
+
+echo "BEGIN;" > $CITYFILE
+echo "SET CONSTRAINTS location_geoname_id_fkey DEFERRED;" >> $CITYFILE
+echo "DELETE FROM city;" >> $CITYFILE
+
+# download files
+
+wget -qO- http://download.geonames.org/export/dump/cities$POPULATION.zip | zcat | awk 'BEGIN { FS="\t" } { gsub("\x27", "\x27\x27", $2); print "INSERT INTO city (geoname_id, title, country_code, region_code) VALUES (" $1 ", \x27" $2 "\x27, \x27" $9 "\x27, \x27" $11 "\x27);" }' >> $CITYFILE
+wget -qO- http://download.geonames.org/export/dump/admin1CodesASCII.txt | cat | awk 'BEGIN { FS="\t" } { gsub("\x27", "\x27\x27", $2); print "INSERT INTO region (geoname_id, title, code) VALUES (" $4 ", \x27" $2 "\x27, \x27" $1 "\x27);" }' > $REGIONFILE
+
+# end transaction
+
+echo "COMMIT;" >> $CITYFILE
+
+# prepare sql
+
+cat << EOF > $CITYSQLFILE
+CREATE TABLE IF NOT EXISTS city (
+  geoname_id INT NOT NULL,
+  title TEXT NOT NULL,
+  title_region TEXT,
+  title_combined TEXT,
+  country_code CHAR(2),
+  region_code TEXT,
+  UNIQUE(title_combined),
+  PRIMARY KEY(geoname_id)
+);
+
+--
+
+CREATE INDEX IF NOT EXISTS idx_city_title ON city(title);
+CREATE INDEX IF NOT EXISTS idx_city_title_region ON city(title_region);
+CREATE INDEX IF NOT EXISTS idx_city_country_code ON city(country_code);
+CREATE INDEX IF NOT EXISTS idx_city_region_code ON city(region_code);
+
+--
+
+CREATE TABLE IF NOT EXISTS region (
+  geoname_id INT NOT NULL,
+  title TEXT NOT NULL,
+  code TEXT NOT NULL,
+  UNIQUE(code),
+  PRIMARY KEY(geoname_id)
+);
+
+--
+
+CREATE INDEX IF NOT EXISTS idx_region_code ON region(code);
+
+--
+
+DELETE FROM region;
+EOF
+
+# check if files exist
+
+if [ ! -f "$CITYFILE" -o ! -f "$REGIONFILE" -o ! -f "$CITYSQLFILE" ] ; then
+  echo "$0: Error: Data files don't exist." >&2
+  exit 1
+fi
+
+# update region after file copy, and remove unneeded index
+
+CITYSQL1="UPDATE city SET title_region = region.title FROM region WHERE CONCAT(country_code, '.', region_code) = code AND region.title != '';"
+CITYSQL2="DELETE FROM city c1 USING city c2 WHERE c1.geoname_id < c2.geoname_id AND c1.title = c2.title AND c1.title_region = c2.title_region AND c1.country_code = c2.country_code;"
+CITYSQL3="UPDATE city SET title_combined = CONCAT(city.title, ' ', city.title_region, ' ', city.country_code) FROM city c2 WHERE city.geoname_id != c2.geoname_id AND city.title = c2.title AND city.title_region = c2.title_region AND city.title_combined IS NULL;"
+CITYSQL4="UPDATE city SET title_combined = CONCAT(city.title, ' ', city.country_code) FROM city c2 WHERE city.geoname_id != c2.geoname_id AND city.title = c2.title AND city.country_code != c2.country_code AND city.title_region IS NULL AND city.title_combined IS NULL;"
+CITYSQL5="UPDATE city SET title_combined = CONCAT(city.title, ' ', city.title_region) FROM city c2 WHERE city.geoname_id != c2.geoname_id AND city.title = c2.title AND city.title_region != c2.title_region AND city.title_combined IS NULL;"
+
+# run the sql commands
+
+psql -U "$USER" -d "$DB" -h "$HOST" -f "$CITYSQLFILE" -f "$CITYFILE" -f "$REGIONFILE" -c "$CITYSQL1" -c "$CITYSQL2" -c "$CITYSQL3" -c "$CITYSQL4" -c "$CITYSQL5" -q
+
+# remove tmp files if they exist
+
+rm -f $CITYFILE $REGIONFILE $CITYSQLFILE
+
+# clean exit
+
+exit 0
