@@ -221,6 +221,8 @@ CREATE TABLE city (
   title TEXT NOT NULL,
   title_region TEXT,
   title_combined TEXT,
+  latitude DECIMAL(7,5),
+  longitude DECIMAL(8,5),
   country_code CHAR(2),
   region_code TEXT,
   UNIQUE(title_combined),
