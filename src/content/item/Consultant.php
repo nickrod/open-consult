@@ -2,21 +2,21 @@
 
 //
 
-namespace nickrod\openconsult\content\item;
+namespace openconsult\content\item;
 
 //
 
-use nickrod\openconsult\tools\Validate;
-use nickrod\openconsult\tools\Sanitize;
-use nickrod\openconsult\account\user\User;
-use nickrod\openconsult\content\group\Category;
-use nickrod\openconsult\content\group\Location;
-use nickrod\openconsult\content\group\Currency;
-use nickrod\openconsult\content\tag\category\Consultant as ConsultantCategory;
-use nickrod\openconsult\content\tag\location\Consultant as ConsultantLocation;
-use nickrod\openconsult\content\tag\currency\Consultant as ConsultantCurrency;
-use nickrod\openconsult\content\tag\favorite\Consultant as ConsultantFavorite;
-use nickrod\openconsult\content\total\Consultant as ConsultantTotal;
+use openconsult\tools\Validate;
+use openconsult\tools\Sanitize;
+use openconsult\account\user\User;
+use openconsult\content\group\Category;
+use openconsult\content\group\Location;
+use openconsult\content\group\Currency;
+use openconsult\content\tag\category\Consultant as ConsultantCategory;
+use openconsult\content\tag\location\Consultant as ConsultantLocation;
+use openconsult\content\tag\currency\Consultant as ConsultantCurrency;
+use openconsult\content\tag\favorite\Consultant as ConsultantFavorite;
+use openconsult\content\total\Consultant as ConsultantTotal;
 
 //
 

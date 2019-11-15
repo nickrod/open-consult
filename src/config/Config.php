@@ -2,15 +2,15 @@
 
 //
 
-namespace nickrod\openconsult\config;
+namespace openconsult\config;
 
 //
 
 use PDO;
 use PDOException;
 use Mobile_Detect;
-use nickrod\openconsult\exceptions\OpenconsultException;
-use nickrod\openconsult\tools\Singleton;
+use openconsult\exceptions\OpenconsultException;
+use openconsult\tools\Singleton;
 
 //
 

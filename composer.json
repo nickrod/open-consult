@@ -1,0 +1,22 @@
+{
+    "name": "nickrod/openconsult",
+    "description": "Simple consulting library",
+    "keywords": ["consult", "consultant", "networking", "consulting", "consultation", "freelancing", "lead generation"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "nickrod",
+            "email": "nickrod@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "php": "^7.0"
+    },
+    "autoload": {
+        "psr-4": { "openconsult\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "openconsult\\tests\\": "tests/" }
+    }
+}

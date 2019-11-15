@@ -2,11 +2,11 @@
 
 //
 
-namespace nickrod\openconsult\content\tag\category;
+namespace openconsult\content\tag\category;
 
 //
 
-use nickrod\openconsult\base\Table;
+use openconsult\base\Table;
 
 //
 

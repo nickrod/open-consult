@@ -2,12 +2,12 @@
 
 //
 
-namespace nickrod\openconsult\total;
+namespace openconsult\total;
 
 //
 
-use nickrod\openconsult\base\Table;
-use nickrod\openconsult\tools\Validate;
+use openconsult\base\Table;
+use openconsult\tools\Validate;
 
 //
 

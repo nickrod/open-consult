@@ -2,7 +2,7 @@
 
 //
 
-namespace nickrod\openconsult\content\ajax;
+namespace openconsult\content\ajax;
 
 //
 

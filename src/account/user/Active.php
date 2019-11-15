@@ -2,11 +2,11 @@
 
 //
 
-namespace nickrod\openconsult\account\user;
+namespace openconsult\account\user;
 
 //
 
-use nickrod\openconsult\tools\Validate;
+use openconsult\tools\Validate;
 
 //
 

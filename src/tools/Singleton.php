@@ -2,7 +2,7 @@
 
 //
 
-namespace nickrod\openconsult\tools;
+namespace openconsult\tools;
 
 //
 

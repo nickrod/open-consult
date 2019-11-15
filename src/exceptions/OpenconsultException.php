@@ -2,7 +2,7 @@
 
 //
 
-namespace nickrod\openconsult\exceptions;
+namespace openconsult\exceptions;
 
 //
 

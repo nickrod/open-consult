@@ -2,14 +2,14 @@
 
 //
 
-namespace nickrod\openconsult\base;
+namespace openconsult\base;
 
 //
 
-use nickrod\openconsult\config\Config;
-use nickrod\openconsult\tools\Validate;
-use nickrod\openconsult\tools\Sanitize;
-use nickrod\openconsult\exceptions\OpenconsultException;
+use openconsult\config\Config;
+use openconsult\tools\Validate;
+use openconsult\tools\Sanitize;
+use openconsult\exceptions\OpenconsultException;
 
 //
 

@@ -2,7 +2,7 @@
 
 //
 
-namespace nickrod\openconsult\account\auth;
+namespace openconsult\account\auth;
 
 //
 

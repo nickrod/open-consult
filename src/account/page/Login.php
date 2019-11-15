@@ -2,7 +2,7 @@
 
 //
 
-namespace nickrod\openconsult\account\page;
+namespace openconsult\account\page;
 
 //
 

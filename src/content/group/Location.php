@@ -2,13 +2,13 @@
 
 //
 
-namespace nickrod\openconsult\content\group;
+namespace openconsult\content\group;
 
 //
 
-use nickrod\openconsult\base\Table;
-use nickrod\openconsult\tools\Validate;
-use nickrod\openconsult\tools\Sanitize;
+use openconsult\base\Table;
+use openconsult\tools\Validate;
+use openconsult\tools\Sanitize;
 
 //
 

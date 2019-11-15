@@ -2,11 +2,11 @@
 
 //
 
-namespace nickrod\openconsult\content\tag\currency;
+namespace openconsult\content\tag\currency;
 
 //
 
-use nickrod\openconsult\base\Table;
+use openconsult\base\Table;
 
 //
 

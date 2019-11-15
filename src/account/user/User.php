@@ -2,13 +2,13 @@
 
 //
 
-namespace nickrod\openconsult\account\user;
+namespace openconsult\account\user;
 
 //
 
-use nickrod\openconsult\base\Table;
-use nickrod\openconsult\exceptions\OpenconsultException;
-use nickrod\openconsult\tools\Validate;
+use openconsult\base\Table;
+use openconsult\exceptions\OpenconsultException;
+use openconsult\tools\Validate;
 
 //
 

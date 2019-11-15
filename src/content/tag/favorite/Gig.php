@@ -2,11 +2,11 @@
 
 //
 
-namespace nickrod\openconsult\content\tag\favorite;
+namespace openconsult\content\tag\favorite;
 
 //
 
-use nickrod\openconsult\base\Table;
+use openconsult\base\Table;
 
 //
 

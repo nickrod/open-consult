@@ -2,7 +2,7 @@
 
 //
 
-namespace nickrod\openconsult\content\feed;
+namespace openconsult\content\feed;
 
 //
 

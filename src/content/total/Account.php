@@ -2,11 +2,11 @@
 
 //
 
-namespace nickrod\openconsult\content\total;
+namespace openconsult\content\total;
 
 //
 
-use nickrod\openconsult\base\Table;
+use openconsult\base\Table;
 
 //
 

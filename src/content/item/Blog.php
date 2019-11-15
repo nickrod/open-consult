@@ -2,17 +2,17 @@
 
 //
 
-namespace nickrod\openconsult\content\item;
+namespace openconsult\content\item;
 
 //
 
-use nickrod\openconsult\tools\Validate;
-use nickrod\openconsult\tools\Sanitize;
-use nickrod\openconsult\account\user\User;
-use nickrod\openconsult\content\group\Category;
-use nickrod\openconsult\content\tag\category\Blog as BlogCategory;
-use nickrod\openconsult\content\tag\favorite\Blog as BlogFavorite;
-use nickrod\openconsult\content\total\Blog as BlogTotal;
+use openconsult\tools\Validate;
+use openconsult\tools\Sanitize;
+use openconsult\account\user\User;
+use openconsult\content\group\Category;
+use openconsult\content\tag\category\Blog as BlogCategory;
+use openconsult\content\tag\favorite\Blog as BlogFavorite;
+use openconsult\content\total\Blog as BlogTotal;
 
 //
 

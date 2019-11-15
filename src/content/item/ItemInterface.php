@@ -2,7 +2,7 @@
 
 //
 
-namespace nickrod\openconsult\content\item;
+namespace openconsult\content\item;
 
 //
 

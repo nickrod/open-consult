@@ -2,11 +2,11 @@
 
 //
 
-namespace nickrod\openconsult\content\tag\location;
+namespace openconsult\content\tag\location;
 
 //
 
-use nickrod\openconsult\base\Table;
+use openconsult\base\Table;
 
 //
 

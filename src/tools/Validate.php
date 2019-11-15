@@ -2,11 +2,11 @@
 
 //
 
-namespace nickrod\openconsult\tools;
+namespace openconsult\tools;
 
 //
 
-use nickrod\openconsult\exceptions\OpenconsultException;
+use openconsult\exceptions\OpenconsultException;
 
 //
 

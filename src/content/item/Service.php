@@ -2,12 +2,12 @@
 
 //
 
-namespace nickrod\openconsult\content\item;
+namespace openconsult\content\item;
 
 //
 
-use nickrod\openconsult\exceptions\OpenconsultException;
-use nickrod\openconsult\tools\Validate;
+use openconsult\exceptions\OpenconsultException;
+use openconsult\tools\Validate;
 
 //
 
