@@ -35,6 +35,10 @@ DROP TABLE IF EXISTS service_favorite;
 
 --
 
+DROP TABLE IF EXISTS service_partner;
+
+--
+
 DROP TABLE IF EXISTS total;
 DROP TABLE IF EXISTS consultant_total;
 DROP TABLE IF EXISTS blog_total;
@@ -477,6 +481,14 @@ CREATE TABLE service_favorite (
   PRIMARY KEY(service_id, account_id)
 );
 
+-- partner
+
+CREATE TABLE service_partner (
+  service_id INT NOT NULL REFERENCES service(id) ON DELETE CASCADE,
+  account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+  PRIMARY KEY(service_id, account_id)
+);
+
 -- total
 
 CREATE TABLE total (
@@ -533,12 +545,14 @@ CREATE INDEX idx_gig_total_total_favorites ON gig_total(total_favorites);
 CREATE TABLE service_total (
   service_id INT NOT NULL REFERENCES service(id) ON DELETE CASCADE,
   total_favorites INT NOT NULL DEFAULT 0,
+  total_partners INT NOT NULL DEFAULT 0,
   PRIMARY KEY(service_id)
 );
 
 --
 
 CREATE INDEX idx_service_total_total_favorites ON service_total(total_favorites);
+CREATE INDEX idx_service_total_total_partners ON service_total(total_partners);
 
 --
 
@@ -598,6 +612,7 @@ CREATE TABLE account_total (
   total_consultant_favorites INT NOT NULL DEFAULT 0,
   total_gig_favorites INT NOT NULL DEFAULT 0,
   total_service_favorites INT NOT NULL DEFAULT 0,
+  total_service_partners INT NOT NULL DEFAULT 0,
   total_blogs INT NOT NULL DEFAULT 0,
   total_gigs INT NOT NULL DEFAULT 0,
   total_services INT NOT NULL DEFAULT 0,
@@ -610,6 +625,7 @@ CREATE INDEX idx_account_total_total_blog_favorites ON account_total(total_blog_
 CREATE INDEX idx_account_total_total_consultant_favorites ON account_total(total_consultant_favorites);
 CREATE INDEX idx_account_total_total_gig_favorites ON account_total(total_gig_favorites);
 CREATE INDEX idx_account_total_total_service_favorites ON account_total(total_service_favorites);
+CREATE INDEX idx_account_total_total_service_partners ON account_total(total_service_partners);
 CREATE INDEX idx_account_total_total_blogs ON account_total(total_blogs);
 CREATE INDEX idx_account_total_total_gigs ON account_total(total_gigs);
 CREATE INDEX idx_account_total_total_services ON account_total(total_services);

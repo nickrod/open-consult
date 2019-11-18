@@ -294,6 +294,26 @@ BEGIN
 END;
 $BODY$ LANGUAGE plpgsql;
 
+-- item partner
+
+CREATE OR REPLACE FUNCTION item_partner()
+RETURNS trigger AS
+$BODY$
+BEGIN
+  IF (TG_TABLE_NAME = 'service_partner') THEN
+    IF (TG_OP = 'INSERT') THEN
+      UPDATE service_total SET total_partners = total_partners + 1 WHERE service_id = NEW.service_id;
+      UPDATE account_total SET total_service_partners = total_service_partners + 1 WHERE account_id = NEW.account_id;
+    ELSIF (TG_OP = 'DELETE') THEN
+      UPDATE service_total SET total_partners = total_partners - 1 WHERE service_id = OLD.service_id;
+      UPDATE account_total SET total_service_partners = total_service_partners - 1 WHERE account_id = OLD.account_id;
+      RETURN OLD;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$BODY$ LANGUAGE plpgsql;
+
 -- triggers
 
 -- account
@@ -455,3 +475,13 @@ CREATE TRIGGER gig_favorite_insert BEFORE INSERT ON gig_favorite FOR EACH ROW EX
 CREATE TRIGGER gig_favorite_delete BEFORE DELETE ON gig_favorite FOR EACH ROW EXECUTE PROCEDURE item_favorite();
 CREATE TRIGGER service_favorite_insert BEFORE INSERT ON service_favorite FOR EACH ROW EXECUTE PROCEDURE item_favorite();
 CREATE TRIGGER service_favorite_delete BEFORE DELETE ON service_favorite FOR EACH ROW EXECUTE PROCEDURE item_favorite();
+
+-- item partner
+
+DROP TRIGGER IF EXISTS service_partner_insert ON service_partner;
+DROP TRIGGER IF EXISTS service_partner_delete ON service_partner;
+
+--
+
+CREATE TRIGGER service_partner_insert BEFORE INSERT ON service_partner FOR EACH ROW EXECUTE PROCEDURE item_partner();
+CREATE TRIGGER service_partner_delete BEFORE DELETE ON service_partner FOR EACH ROW EXECUTE PROCEDURE item_partner();
