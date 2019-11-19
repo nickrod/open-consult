@@ -104,6 +104,7 @@ CREATE TABLE account (
 
 --
 
+CREATE INDEX idx_account_username ON account(username);
 CREATE INDEX idx_account_admin ON account(admin);
 CREATE INDEX idx_account_enabled ON account(enabled);
 CREATE INDEX idx_account_created_date ON account(created_date);
