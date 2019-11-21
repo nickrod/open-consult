@@ -21,7 +21,8 @@ class Service extends Table
 
   public static $column = [
     'service_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
-    'total_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
+    'total_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
+    'total_partners' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
   // constants
@@ -40,5 +41,12 @@ class Service extends Table
   public function getTotalFavorites() 
   {
     return filter_var($this->total_favorites, FILTER_SANITIZE_NUMBER_INT);
+  }
+
+  //
+
+  public function getTotalPartners() 
+  {
+    return filter_var($this->total_partners, FILTER_SANITIZE_NUMBER_INT);
   }
 }

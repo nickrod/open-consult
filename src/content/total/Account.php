@@ -19,6 +19,7 @@ class Account extends Table
   protected $total_consultant_favorites;
   protected $total_gig_favorites;
   protected $total_service_favorites;
+  protected $total_service_partners;
   protected $total_blogs;
   protected $total_gigs;
   protected $total_services;
@@ -31,6 +32,7 @@ class Account extends Table
     'total_consultant_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_gig_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_service_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
+    'total_service_partners' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_blogs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_gigs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
@@ -73,6 +75,13 @@ class Account extends Table
   public function getTotalServiceFavorites() 
   {
     return filter_var($this->total_service_favorites, FILTER_SANITIZE_NUMBER_INT);
+  }
+
+  //
+
+  public function getTotalServicePartners() 
+  {
+    return filter_var($this->total_service_partners, FILTER_SANITIZE_NUMBER_INT);
   }
 
   //
