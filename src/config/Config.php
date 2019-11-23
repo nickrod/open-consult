@@ -9,7 +9,7 @@ namespace openconsult\config;
 use PDO;
 use PDOException;
 use Mobile_Detect;
-use openconsult\exceptions\OpenconsultException;
+use openconsult\exceptions\OpenConsultException;
 use openconsult\tools\Singleton;
 
 //
@@ -131,7 +131,7 @@ class Config extends Singleton
     {
       if (!$settings = parse_ini_file($this->db_settings, true))
       {
-        throw new OpenconsultException(27, __METHOD__);
+        throw new OpenConsultException(27, __METHOD__);
       }
 
       //

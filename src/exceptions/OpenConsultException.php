@@ -10,7 +10,7 @@ use RuntimeException;
 
 //
 
-class OpenconsultException extends RuntimeException
+class OpenConsultException extends RuntimeException
 {
   // messages
 

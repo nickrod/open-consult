@@ -7,7 +7,7 @@ namespace openconsult\account\user;
 //
 
 use openconsult\base\Table;
-use openconsult\exceptions\OpenconsultException;
+use openconsult\exceptions\OpenConsultException;
 use openconsult\tools\Validate;
 
 //

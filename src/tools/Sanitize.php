@@ -6,7 +6,7 @@ namespace openconsult\tools;
 
 //
 
-use openconsult\exceptions\OpenconsultException;
+use openconsult\exceptions\OpenConsultException;
 
 //
 
@@ -16,11 +16,11 @@ class Sanitize
   {
     if (empty($str))
     {
-      throw new OpenconsultException(14, __METHOD__);
+      throw new OpenConsultException(14, __METHOD__);
     }
     elseif (!is_string($str))
     {
-      throw new OpenconsultException(5, __METHOD__);
+      throw new OpenConsultException(5, __METHOD__);
     }
     else
     {
@@ -40,19 +40,19 @@ class Sanitize
   {
     if (empty($str) || empty($limit))
     {
-      throw new OpenconsultException(14, __METHOD__);
+      throw new OpenConsultException(14, __METHOD__);
     }
     elseif (!is_string($str))
     {
-      throw new OpenconsultException(5, __METHOD__);
+      throw new OpenConsultException(5, __METHOD__);
     }
     elseif (!is_int($limit))
     {
-      throw new OpenconsultException(3, __METHOD__);
+      throw new OpenConsultException(3, __METHOD__);
     }
     elseif (!filter_var($limit, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100000000]]))
     {
-      throw new OpenconsultException(7, __METHOD__);
+      throw new OpenConsultException(7, __METHOD__);
     }
     else
     {
@@ -66,11 +66,11 @@ class Sanitize
   {
     if (empty($column))
     {
-      throw new OpenconsultException(14, __METHOD__);
+      throw new OpenConsultException(14, __METHOD__);
     }
     elseif (!is_array($column))
     {
-      throw new OpenconsultException(4, __METHOD__);
+      throw new OpenConsultException(4, __METHOD__);
     }
     else
     {
@@ -106,15 +106,15 @@ class Sanitize
   {
     if (empty($type) || empty($column) || empty($class_column))
     {
-      throw new OpenconsultException(14, __METHOD__);
+      throw new OpenConsultException(14, __METHOD__);
     }
     elseif ((!empty($glue_inner) && !is_string($glue_inner)) || (!empty($glue_outer) && !is_string($glue_outer)) || !is_string($type))
     {
-      throw new OpenconsultException(5, __METHOD__);
+      throw new OpenConsultException(5, __METHOD__);
     }
     elseif (!is_array($column) || !is_array($class_column))
     {
-      throw new OpenconsultException(4, __METHOD__);
+      throw new OpenConsultException(4, __METHOD__);
     }
     elseif ($type != 'order_by' || $type != 'allowed' || $type != 'index' || $type != 'search' || $type != 'key' || $type == 'filter')
     {
@@ -131,11 +131,11 @@ class Sanitize
       {
         if (!in_array($key, array_keys($column)))
         {
-          throw new OpenconsultException(25, __METHOD__);
+          throw new OpenConsultException(25, __METHOD__);
         }
         elseif (!isset($column[$key]))
         {
-          throw new OpenconsultException(15, __METHOD__);
+          throw new OpenConsultException(15, __METHOD__);
         }
         elseif (!$column[$key][$type])
         {

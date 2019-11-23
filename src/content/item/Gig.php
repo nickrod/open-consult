@@ -6,7 +6,7 @@ namespace openconsult\content\item;
 
 //
 
-use openconsult\exceptions\OpenconsultException;
+use openconsult\exceptions\OpenConsultException;
 use openconsult\tools\Validate;
 
 //

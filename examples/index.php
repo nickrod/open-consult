@@ -2,7 +2,8 @@
 
 //
 
-use openconsult\SimplePaginate;
+use PDOException;
+use openconsult\exceptions\OpenconsultException;
 
 //
 

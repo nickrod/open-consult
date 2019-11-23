@@ -9,7 +9,7 @@ namespace openconsult\base;
 use openconsult\config\Config;
 use openconsult\tools\Validate;
 use openconsult\tools\Sanitize;
-use openconsult\exceptions\OpenconsultException;
+use openconsult\exceptions\OpenConsultException;
 
 //
 
@@ -27,11 +27,11 @@ class Table implements TableInterface
 
     if (empty($pdo))
     {
-      throw new OpenconsultException(13, __METHOD__);
+      throw new OpenConsultException(13, __METHOD__);
     }
     elseif (!Validate::column('allowed', $this::$column, array_keys($vars)))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
@@ -46,7 +46,7 @@ class Table implements TableInterface
       }
       else
       {
-        throw new OpenconsultException(24, __METHOD__);
+        throw new OpenConsultException(24, __METHOD__);
       }
     }
   }
@@ -65,15 +65,15 @@ class Table implements TableInterface
 
     if (empty($pdo))
     {
-      throw new OpenconsultException(13, __METHOD__);
+      throw new OpenConsultException(13, __METHOD__);
     }
     elseif (!$keys = Sanitize::implode_column(' = :', ', ', 'key', $this::$column, array_keys($vars)))
     {
-      throw new OpenconsultException(19, __METHOD__);
+      throw new OpenConsultException(19, __METHOD__);
     }
     elseif (!$values = Sanitize::implode_column(' = :', ' AND ', 'allowed', $this::$column, array_keys($vars)))
     {
-      throw new OpenconsultException(20, __METHOD__);
+      throw new OpenConsultException(20, __METHOD__);
     }
     else
     {
@@ -95,11 +95,11 @@ class Table implements TableInterface
 
     if (empty($pdo))
     {
-      throw new OpenconsultException(13, __METHOD__);
+      throw new OpenConsultException(13, __METHOD__);
     }
     elseif (!$keys = Sanitize::implode_column(' = :', ' AND ', 'key', $this::$column, array_keys($vars)))
     {
-      throw new OpenconsultException(19, __METHOD__);
+      throw new OpenConsultException(19, __METHOD__);
     }
     else
     {
@@ -123,11 +123,11 @@ class Table implements TableInterface
 
     if (empty($pdo))
     {
-      throw new OpenconsultException(13, __METHOD__);
+      throw new OpenConsultException(13, __METHOD__);
     }
     elseif (!$keys = Sanitize::implode_column(' = :', ' AND ', 'key', $class_column, array_keys($column)))
     {
-      throw new OpenconsultException(19, __METHOD__);
+      throw new OpenConsultException(19, __METHOD__);
     }
     else
     {
@@ -157,19 +157,19 @@ class Table implements TableInterface
 
     if (empty($pdo))
     {
-      throw new OpenconsultException(13, __METHOD__);
+      throw new OpenConsultException(13, __METHOD__);
     }
     elseif (!Validate::column('index', $class_column, $keys))
     {
-      throw new OpenconsultException(24, __METHOD__);
+      throw new OpenConsultException(24, __METHOD__);
     }
     elseif (!Validate::limit($limit))
     {
-      throw new OpenconsultException(17, __METHOD__);
+      throw new OpenConsultException(17, __METHOD__);
     }
     elseif (!Validate::offset($offset))
     {
-      throw new OpenconsultException(18, __METHOD__);
+      throw new OpenConsultException(18, __METHOD__);
     }
     else
     {
@@ -217,11 +217,11 @@ class Table implements TableInterface
   {
     if (empty($table))
     {
-      throw new OpenconsultException(14, __METHOD__);
+      throw new OpenConsultException(14, __METHOD__);
     }
     elseif (!is_array($table))
     {
-      throw new OpenconsultException(4, __METHOD__);
+      throw new OpenConsultException(4, __METHOD__);
     }
     else
     {
@@ -233,7 +233,7 @@ class Table implements TableInterface
         }
         else
         {
-          throw new OpenconsultException(6, __METHOD__);
+          throw new OpenConsultException(6, __METHOD__);
         }
       }
     }
@@ -245,11 +245,11 @@ class Table implements TableInterface
   {
     if (empty($table))
     {
-      throw new OpenconsultException(14, __METHOD__);
+      throw new OpenConsultException(14, __METHOD__);
     }
     elseif (!is_array($table))
     {
-      throw new OpenconsultException(4, __METHOD__);
+      throw new OpenConsultException(4, __METHOD__);
     }
     else
     {
@@ -261,7 +261,7 @@ class Table implements TableInterface
         }
         else
         {
-          throw new OpenconsultException(6, __METHOD__);
+          throw new OpenConsultException(6, __METHOD__);
         }
       }
     }
@@ -282,11 +282,11 @@ class Table implements TableInterface
 
     if (empty($pdo))
     {
-      throw new OpenconsultException(13, __METHOD__);
+      throw new OpenConsultException(13, __METHOD__);
     }
     elseif (!$keys = Sanitize::implode_column(' = :', ' AND ', 'key', $class_column, array_keys($column)))
     {
-      throw new OpenconsultException(19, __METHOD__);
+      throw new OpenConsultException(19, __METHOD__);
     }
     else
     {
@@ -317,19 +317,19 @@ class Table implements TableInterface
 
     if (empty($pdo))
     {
-      throw new OpenconsultException(13, __METHOD__);
+      throw new OpenConsultException(13, __METHOD__);
     }
     elseif (!$keys = Sanitize::implode_column(' = :', ' AND ', 'key', $class_column, array_keys($column)))
     {
-      throw new OpenconsultException(19, __METHOD__);
+      throw new OpenConsultException(19, __METHOD__);
     }
     elseif (!$search = Sanitize::implode_column(' = :', ' OR ', 'search', $class_column, array_keys($column)))
     {
-      throw new OpenconsultException(22, __METHOD__);
+      throw new OpenConsultException(22, __METHOD__);
     }
     elseif (!$filter = Sanitize::implode_column('', $filter_str, 'filter', $class_column, array_keys($column)))
     {
-      throw new OpenconsultException(21, __METHOD__);
+      throw new OpenConsultException(21, __METHOD__);
     }
     else
     {

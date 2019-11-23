@@ -6,7 +6,7 @@ namespace openconsult\content\item;
 
 //
 
-use openconsult\exceptions\OpenconsultException;
+use openconsult\exceptions\OpenConsultException;
 use openconsult\base\Table;
 
 //
@@ -62,7 +62,7 @@ class Item extends Table implements ItemInterface
   {
     if (empty($this->category))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
@@ -76,7 +76,7 @@ class Item extends Table implements ItemInterface
   {
     if (empty($this->location))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
@@ -90,7 +90,7 @@ class Item extends Table implements ItemInterface
   {
     if (empty($this->currency))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
@@ -104,7 +104,7 @@ class Item extends Table implements ItemInterface
   {
     if (empty($this->favorite))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
@@ -118,7 +118,7 @@ class Item extends Table implements ItemInterface
   {
     if (empty($this->category))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
@@ -132,7 +132,7 @@ class Item extends Table implements ItemInterface
   {
     if (empty($this->location))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
@@ -146,7 +146,7 @@ class Item extends Table implements ItemInterface
   {
     if (empty($this->currency))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
@@ -160,7 +160,7 @@ class Item extends Table implements ItemInterface
   {
     if (empty($this->favorite))
     {
-      throw new OpenconsultException(16, __METHOD__);
+      throw new OpenConsultException(16, __METHOD__);
     }
     else
     {
