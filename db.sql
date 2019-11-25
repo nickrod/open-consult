@@ -115,6 +115,7 @@ CREATE TABLE account_active (
   account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
   chat_online BOOL NOT NULL DEFAULT FALSE,
   site_online BOOL NOT NULL DEFAULT FALSE,
+  created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(account_id)
 );
@@ -123,6 +124,7 @@ CREATE TABLE account_active (
 
 CREATE INDEX idx_account_active_chat_online ON account_active(chat_online);
 CREATE INDEX idx_account_active_site_online ON account_active(site_online);
+CREATE INDEX idx_account_active_created_date ON account_active(created_date);
 CREATE INDEX idx_account_active_updated_date ON account_active(updated_date);
 
 --
