@@ -178,7 +178,7 @@ CREATE INDEX idx_currency_updated_date ON currency(updated_date);
 
 CREATE TABLE currency_price (
   currency_id INT NOT NULL REFERENCES currency(id) ON DELETE CASCADE,
-  price MONEY DEFAULT 0.00,
+  price INT DEFAULT 0,
   updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(currency_id)
 );
@@ -272,7 +272,7 @@ CREATE TABLE consultant (
   calendar_url TEXT CHECK(TRIM(calendar_url) <> ''),
   image TEXT CHECK(TRIM(image) <> ''),
   image_thumb TEXT CHECK(TRIM(image_thumb) <> ''),
-  rate MONEY DEFAULT 0.00,
+  rate INT DEFAULT 0,
   base_currency_id INT DEFAULT 1 REFERENCES currency(id) ON DELETE SET NULL,
   account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
   featured BOOL NOT NULL DEFAULT FALSE,
@@ -326,7 +326,7 @@ CREATE TABLE gig (
   description_short TEXT CHECK(TRIM(description_short) <> ''),
   canonical_url TEXT NOT NULL CHECK(TRIM(canonical_url) <> ''),
   image TEXT CHECK(TRIM(image) <> ''),
-  salary MONEY DEFAULT 0.00,
+  salary INT DEFAULT 0,
   base_currency_id INT DEFAULT 1 REFERENCES currency(id) ON DELETE SET NULL,
   consultant_id INT NOT NULL REFERENCES consultant(id) ON DELETE CASCADE,
   featured BOOL NOT NULL DEFAULT FALSE,
@@ -355,7 +355,7 @@ CREATE TABLE service (
   description_short TEXT CHECK(TRIM(description_short) <> ''),
   canonical_url TEXT NOT NULL CHECK(TRIM(canonical_url) <> ''),
   image TEXT CHECK(TRIM(image) <> ''),
-  price MONEY DEFAULT 0.00,
+  price INT DEFAULT 0,
   base_currency_id INT DEFAULT 1 REFERENCES currency(id) ON DELETE SET NULL,
   consultant_id INT NOT NULL REFERENCES consultant(id) ON DELETE CASCADE,
   featured BOOL NOT NULL DEFAULT FALSE,
