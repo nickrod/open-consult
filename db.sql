@@ -158,7 +158,7 @@ CREATE TABLE currency (
   crypto BOOL NOT NULL DEFAULT FALSE,
   symbol TEXT NOT NULL CHECK(TRIM(symbol) <> ''),
   symbol_unit TEXT CHECK(TRIM(symbol_unit) <> ''),
-  multiplier_unit INT,
+  multiplier_unit INT NOT NULL DEFAULT 100,
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(code),
