@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\account\user;
 
 //
@@ -44,7 +48,7 @@ class User extends Table
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['id']))
     {
@@ -96,63 +100,63 @@ class User extends Table
 
   // getters
 
-  public function getId() 
+  public function getId(): int 
   {
     return filter_var($this->id, FILTER_SANITIZE_NUMBER_INT);
   }
 
   //
 
-  public function getEmail() 
+  public function getEmail(): string 
   {
     return filter_var($this->email, FILTER_SANITIZE_EMAIL);
   }
 
   //
 
-  public function getNickname() 
+  public function getNickname(): string 
   {
     return filter_var($this->nickname, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   }
 
   //
 
-  public function getUsername() 
+  public function getUsername(): string 
   {
     return filter_var($this->username, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   }
 
   //
 
-  public function getPassword() 
+  public function getPassword(): string 
   {
     return $this->password;
   }
 
   //
 
-  public function getAdmin() 
+  public function getAdmin(): bool 
   {
-    return $this->admin;
+    return $this->admin === 't';
   }
 
   //
 
-  public function getEnabled() 
+  public function getEnabled(): bool 
   {
     return $this->enabled;
   }
 
   //
 
-  public function getUpdatedDate() 
+  public function getUpdatedDate(): string 
   {
     return $this->updated_date;
   }
 
   // setters
 
-  public function setId($id) 
+  public function setId(int $id): void 
   {
     if (Validate::id($id))
     {
@@ -162,7 +166,7 @@ class User extends Table
 
   //
 
-  public function setEmail($email) 
+  public function setEmail($email): void 
   {
     if (Validate::length($email, ['min' => self::$column['email']['min_length'], 'max' => self::$column['email']['max_length']]) && Validate::email($email))
     {
@@ -172,7 +176,7 @@ class User extends Table
 
   //
 
-  public function setNickname($nickname) 
+  public function setNickname($nickname): void 
   {
     if (Validate::length($nickname, ['min' => self::$column['nickname']['min_length'], 'max' => self::$column['nickname']['max_length']]))
     {
@@ -182,7 +186,7 @@ class User extends Table
 
   //
 
-  public function setUsername($username) 
+  public function setUsername($username): void 
   {
     if (Validate::length($username, ['min' => self::$column['username']['min_length'], 'max' => self::$column['username']['max_length']]) && Validate::username($username))
     {
@@ -192,7 +196,7 @@ class User extends Table
 
   //
 
-  public function setPassword($password) 
+  public function setPassword($password): void 
   {
     if (Validate::length($password, ['min' => self::$column['password']['min_length'], 'max' => self::$column['password']['max_length']]) && Validate::password($password))
     {
@@ -202,17 +206,14 @@ class User extends Table
 
   //
 
-  public function setAdmin($admin) 
+  public function setAdmin(bool $admin): void 
   {
-    if (Validate::isBoolean($admin))
-    {
-      $this->admin = $admin;
-    }
+    $this->admin = ($admin ? 't' : 'f');
   }
 
   //
 
-  public function setEnabled($enabled) 
+  public function setEnabled($enabled): void 
   {
     if (Validate::isBoolean($enabled))
     {
