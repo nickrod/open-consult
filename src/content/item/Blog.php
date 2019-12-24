@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\item;
 
 //
@@ -10,9 +14,6 @@ use openconsult\tools\Validate;
 use openconsult\tools\Sanitize;
 use openconsult\account\user\User;
 use openconsult\content\group\Category;
-use openconsult\content\tag\category\Blog as BlogCategory;
-use openconsult\content\tag\favorite\Blog as BlogFavorite;
-use openconsult\content\total\Blog as BlogTotal;
 
 //
 
@@ -32,14 +33,10 @@ class Blog extends Item
   protected $featured;
   protected $created_date;
   protected $updated_date;
-  protected $category;
-  protected $total;
-  protected $favorite;
-  protected $related;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => false],
     'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => true, 'min_length' => 2, 'max_length' => 200, 'search' => true],
     'title_short' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 100, 'search' => false],
@@ -49,118 +46,84 @@ class Blog extends Item
     'canonical_url' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'image' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'consultant_id' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'search' => false],
-    'account_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true],
-    'category_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true],
     'featured' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false],
-    'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false]
+    'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false],
+    'category_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true],
+    'favorite_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'blog';
+  public const TABLE = 'blog';
+  public const CATEGORY = 'openconsult\content\tag\category\Blog';
+  public const FAVORITE = 'openconsult\content\tag\favorite\Blog';
+  public const TOTAL = 'openconsult\content\total\Blog';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
-    if (!empty($this->id))
+    if (isset($column['id']))
     {
-      $this->setCategory($this->getCategory());
-      $this->setTotal($this->getTotal());
-      $this->setFavorite($this->getFavorite());
+      $this->setId($column['id']);
     }
-    else
+
+    //
+
+    if (isset($column['title']))
     {
-      if (isset($column['id']))
-      {
-        $this->setId($column['id']);
-      }
+      $this->setTitle($column['title']);
+    }
 
-      //
+    //
 
-      if (isset($column['title']))
-      {
-        $this->setTitle($column['title']);
-      }
+    if (isset($column['title_short']))
+    {
+      $this->setTitleShort($column['title_short']);
+    }
 
-      //
+    //
 
-      if (isset($column['title_short']))
-      {
-        $this->setTitleShort($column['title_short']);
-      }
+    if (isset($column['description']))
+    {
+      $this->setDescription($column['description']);
+    }
 
-      //
+    //
 
-      if (isset($column['description']))
-      {
-        $this->setDescription($column['description']);
-      }
+    if (isset($column['description_short']))
+    {
+      $this->setDescriptionShort($column['description_short']);
+    }
 
-      //
+    //
 
-      if (isset($column['description_short']))
-      {
-        $this->setDescriptionShort($column['description_short']);
-      }
+    if (isset($column['canonical_url']))
+    {
+      $this->setCanonicalUrl($column['canonical_url']);
+    }
 
-      //
+    //
 
-      if (isset($column['canonical_url']))
-      {
-        $this->setCanonicalUrl($column['canonical_url']);
-      }
+    if (isset($column['consultant_id']))
+    {
+      $this->setConsultantId($column['consultant_id']);
+    }
 
-      //
+    //
 
-      if (isset($column['consultant_id']))
-      {
-        $this->setConsultantId($column['consultant_id']);
-      }
-
-      //
-
-      if (isset($column['featured']))
-      {
-        $this->setFeatured($column['featured']);
-      }
-
-      //
-
-      if (isset($column['category']))
-      {
-        $this->setCategory($column['category']);
-      }
-
-      //
-
-      if (isset($column['total']))
-      {
-        $this->setTotal($column['total']);
-      }
-
-      //
-
-      if (isset($column['favorite']))
-      {
-        $this->setFavorite($column['favorite']);
-      }
-
-      //
-
-      if (isset($column['related']))
-      {
-        $this->setRelated($column['related']);
-      }
+    if (isset($column['featured']))
+    {
+      $this->setFeatured($column['featured']);
     }
   }
 
   // getters
 
-  public function getId() 
+  public function getId(): int 
   {
-    return filter_var($this->id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->id;
   }
 
   //
@@ -237,7 +200,7 @@ class Blog extends Item
 
   public function getCategory()
   {
-    return Category::getList(["blog_id" => $this->id], BlogCategory::$column, "category INNER JOIN blog_category ON category.id = blog_category.category_id");
+    return Category::getList(['blog_id' => $this->id], BlogCategory::$column, 'category INNER JOIN blog_category ON category.id = blog_category.category_id');
   }
 
   //

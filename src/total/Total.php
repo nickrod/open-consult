@@ -2,12 +2,15 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\total;
 
 //
 
 use openconsult\base\Table;
-use openconsult\tools\Validate;
 
 //
 
@@ -26,9 +29,9 @@ class Total extends Table
   protected $total_gigs;
   protected $total_services;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_accounts' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false],
     'total_accounts_active' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false],
@@ -41,76 +44,76 @@ class Total extends Table
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'total';
+  public const TABLE = 'total';
 
   // getters
 
-  public function getId() 
+  public function getId(): int 
   {
     return $this->id;
   }
 
   //
 
-  public function getTotalAccounts() 
+  public function getTotalAccounts(): int 
   {
     return $this->total_accounts;
   }
 
   //
 
-  public function getTotalAccountsActive() 
+  public function getTotalAccountsActive(): int 
   {
     return $this->total_accounts_active;
   }
 
   //
 
-  public function getTotalCurrencies() 
+  public function getTotalCurrencies(): int 
   {
     return $this->total_currencies;
   }
 
   //
 
-  public function getTotalCategories() 
+  public function getTotalCategories(): int 
   {
     return $this->total_categories;
   }
 
   //
 
-  public function getTotalLocations() 
+  public function getTotalLocations(): int 
   {
     return $this->total_locations;
   }
 
   //
 
-  public function getTotalBlogs() 
+  public function getTotalBlogs(): int 
   {
     return $this->total_blogs;
   }
 
   //
 
-  public function getTotalConsultants() 
+  public function getTotalConsultants(): int 
   {
     return $this->total_consultants;
   }
 
   //
 
-  public function getTotalGigs() 
+  public function getTotalGigs(): int 
   {
     return $this->total_gigs;
   }
 
   //
 
-  public function getTotalServices() 
+  public function getTotalServices(): int 
   {
     return $this->total_services;
   }

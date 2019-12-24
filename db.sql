@@ -69,7 +69,7 @@ DROP TABLE IF EXISTS region;
 
 DROP TABLE IF EXISTS admin;
 DROP TABLE IF EXISTS account_active;
-DROP TABLE IF EXISTS auth_token;
+DROP TABLE IF EXISTS account_auth;
 DROP TABLE IF EXISTS account;
 
 -- create tables
@@ -94,6 +94,7 @@ CREATE TABLE account (
   nickname TEXT CHECK(TRIM(nickname) <> ''),
   username TEXT NOT NULL CHECK(TRIM(username) <> ''),
   password TEXT NOT NULL CHECK(TRIM(password) <> ''),
+  pubkey TEXT CHECK(TRIM(pubkey) <> ''),
   admin BOOL NOT NULL DEFAULT FALSE,
   enabled BOOL NOT NULL DEFAULT TRUE,
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -129,19 +130,25 @@ CREATE INDEX idx_account_active_updated_date ON account_active(updated_date);
 
 --
 
-CREATE TABLE auth_token (
+CREATE TABLE account_auth (
   id SERIAL PRIMARY KEY,
-  token TEXT NOT NULL CHECK(TRIM(token) <> ''),
+  selector TEXT CHECK(TRIM(selector) <> ''),
+  hashed_validator TEXT CHECK(TRIM(hashed_validator) <> ''),
   account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
   ip INET NOT NULL,
+  authenticated BOOL NOT NULL DEFAULT FALSE,
   enabled BOOL NOT NULL DEFAULT TRUE,
-  created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(selector)
 );
 
 --
 
-CREATE INDEX idx_auth_token_enabled ON auth_token(enabled);
-CREATE INDEX idx_auth_token_created_date ON auth_token(created_date);
+CREATE INDEX idx_account_auth_account_id ON account_auth(account_id);
+CREATE INDEX idx_account_auth_ip ON account_auth(ip);
+CREATE INDEX idx_account_auth_authenticated ON account_auth(authenticated);
+CREATE INDEX idx_account_auth_enabled ON account_auth(enabled);
+CREATE INDEX idx_account_auth_created_date ON account_auth(created_date);
 
 --
 

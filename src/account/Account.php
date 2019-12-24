@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 //
 
@@ -6,17 +6,17 @@ declare(strict_types=1);
 
 //
 
-namespace openconsult\account\user;
+namespace openconsult\account;
 
 //
 
 use openconsult\base\Table;
-use openconsult\exceptions\OpenConsultException;
 use openconsult\tools\Validate;
+use openconsult\tools\Sanitize;
 
 //
 
-class User extends Table
+class Account extends Table
 {
   // variables
 
@@ -25,26 +25,30 @@ class User extends Table
   protected $nickname;
   protected $username;
   protected $password;
+  protected $pubkey;
   protected $admin;
   protected $enabled;
+  protected $created_date;
   protected $updated_date;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'email' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 3, 'max_length' => 100],
     'nickname' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 3, 'max_length' => 30],
     'username' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 3, 'max_length' => 12],
-    'password' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 8, 'max_length' => 100],
+    'password' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 8, 'max_length' => 1000],
+    'pubkey' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 1],
     'admin' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false],
     'enabled' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false],
+    'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'account';
+  public const TABLE = 'account';
 
   // constructor
 
@@ -85,6 +89,13 @@ class User extends Table
 
     //
 
+    if (isset($column['pubkey']))
+    {
+      $this->setPubkey($column['pubkey']);
+    }
+
+    //
+
     if (isset($column['admin']))
     {
       $this->setAdmin($column['admin']);
@@ -102,28 +113,28 @@ class User extends Table
 
   public function getId(): int 
   {
-    return filter_var($this->id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->id;
   }
 
   //
 
   public function getEmail(): string 
   {
-    return filter_var($this->email, FILTER_SANITIZE_EMAIL);
+    return $this->email;
   }
 
   //
 
   public function getNickname(): string 
   {
-    return filter_var($this->nickname, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML($this->nickname);
   }
 
   //
 
   public function getUsername(): string 
   {
-    return filter_var($this->username, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return urlencode($this->username);
   }
 
   //
@@ -135,50 +146,68 @@ class User extends Table
 
   //
 
+  public function getPubkey(): string 
+  {
+    return $this->pubkey;
+  }
+
+  //
+
   public function getAdmin(): bool 
   {
-    return $this->admin === 't';
+    return Sanitize::getBoolean($this->admin);
   }
 
   //
 
   public function getEnabled(): bool 
   {
-    return $this->enabled;
+    return Sanitize::getBoolean($this->enabled);
+  }
+
+  //
+
+  public function getCreatedDate(): string 
+  {
+    return Sanitize::noHTML($this->created_date);
   }
 
   //
 
   public function getUpdatedDate(): string 
   {
-    return $this->updated_date;
+    return Sanitize::noHTML($this->updated_date);
   }
 
   // setters
 
   public function setId(int $id): void 
   {
-    if (Validate::id($id))
+    $this->id = $id;
+  }
+
+  //
+
+  public function setEmail(string $email): void 
+  {
+    if (Validate::strLength($email, ['min' => self::$column['email']['min_length'], 'max' => self::$column['email']['max_length']]))
     {
-      $this->id = $id;
+      if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+      {
+        throw new \InvalidArgumentException('Email is invalid: ' . $email);
+      }
+      else
+      {
+        $this->email = $email;
+      }
     }
   }
 
   //
 
-  public function setEmail($email): void 
+  public function setNickname(string $nickname): void 
   {
-    if (Validate::length($email, ['min' => self::$column['email']['min_length'], 'max' => self::$column['email']['max_length']]) && Validate::email($email))
-    {
-      $this->email = $email;
-    }
-  }
-
-  //
-
-  public function setNickname($nickname): void 
-  {
-    if (Validate::length($nickname, ['min' => self::$column['nickname']['min_length'], 'max' => self::$column['nickname']['max_length']]))
+    if (Validate::strLength($nickname, ['min' => self::$column['nickname']['min_length'], 'max' => self::$column['nickname']['max_length']]))
     {
       $this->nickname = $nickname;
     }
@@ -186,19 +215,19 @@ class User extends Table
 
   //
 
-  public function setUsername($username): void 
+  public function setUsername(string $username): void 
   {
-    if (Validate::length($username, ['min' => self::$column['username']['min_length'], 'max' => self::$column['username']['max_length']]) && Validate::username($username))
+    if (Validate::strLength($username, ['min' => self::$column['username']['min_length'], 'max' => self::$column['username']['max_length']]))
     {
-      $this->username = $username;
+      $this->username = Sanitize::slugify($username);
     }
   }
 
   //
 
-  public function setPassword($password): void 
+  public function setPassword(string $password): void 
   {
-    if (Validate::length($password, ['min' => self::$column['password']['min_length'], 'max' => self::$column['password']['max_length']]) && Validate::password($password))
+    if (Validate::strLength($password, ['min' => self::$column['password']['min_length'], 'max' => self::$column['password']['max_length']]))
     {
       $this->password = $password;
     }
@@ -206,18 +235,25 @@ class User extends Table
 
   //
 
-  public function setAdmin(bool $admin): void 
+  public function setPubkey(string $pubkey): void 
   {
-    $this->admin = ($admin ? 't' : 'f');
+    if (Validate::strLength($pubkey, ['min' => self::$column['pubkey']['min_length']]))
+    {
+      $this->pubkey = $pubkey;
+    }
   }
 
   //
 
-  public function setEnabled($enabled): void 
+  public function setAdmin(bool $admin): void 
   {
-    if (Validate::isBoolean($enabled))
-    {
-      $this->enabled = $enabled;
-    }
+    $this->admin = Sanitize::setBoolean($admin);
+  }
+
+  //
+
+  public function setEnabled(bool $enabled): void 
+  {
+    $this->enabled = Sanitize::setBoolean($enabled);
   }
 }

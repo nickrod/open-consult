@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\total;
 
 //
@@ -17,36 +21,36 @@ class Service extends Table
   protected $service_id;
   protected $total_favorites;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'service_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_partners' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'service_total';
+  public const TABLE = 'service_total';
 
   // getters
 
-  public function getServiceId() 
+  public function getServiceId(): int 
   {
-    return filter_var($this->service_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->service_id;
   }
 
   //
 
-  public function getTotalFavorites() 
+  public function getTotalFavorites(): int 
   {
-    return filter_var($this->total_favorites, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_favorites;
   }
 
   //
 
-  public function getTotalPartners() 
+  public function getTotalPartners(): int 
   {
-    return filter_var($this->total_partners, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_partners;
   }
 }

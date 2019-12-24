@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\total;
 
 //
@@ -24,9 +28,9 @@ class Account extends Table
   protected $total_gigs;
   protected $total_services;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'account_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_blog_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_consultant_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
@@ -38,70 +42,70 @@ class Account extends Table
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'account_total';
+  public const TABLE = 'account_total';
 
   // getters
 
-  public function getAccountId() 
+  public function getAccountId(): int 
   {
-    return filter_var($this->account_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->account_id;
   }
 
   //
 
-  public function getTotalBlogFavorites() 
+  public function getTotalBlogFavorites(): int 
   {
-    return filter_var($this->total_blog_favorites, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_blog_favorites;
   }
 
   //
 
-  public function getTotalConsultantFavorites() 
+  public function getTotalConsultantFavorites(): int 
   {
-    return filter_var($this->total_consultant_favorites, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_consultant_favorites;
   }
 
   //
 
-  public function getTotalGigFavorites() 
+  public function getTotalGigFavorites(): int 
   {
-    return filter_var($this->total_gig_favorites, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_gig_favorites;
   }
 
   //
 
-  public function getTotalServiceFavorites() 
+  public function getTotalServiceFavorites(): int 
   {
-    return filter_var($this->total_service_favorites, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_service_favorites;
   }
 
   //
 
-  public function getTotalServicePartners() 
+  public function getTotalServicePartners(): int 
   {
-    return filter_var($this->total_service_partners, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_service_partners;
   }
 
   //
 
-  public function getTotalBlogs() 
+  public function getTotalBlogs(): int 
   {
-    return filter_var($this->total_blogs, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_blogs;
   }
 
   //
 
-  public function getTotalGigs() 
+  public function getTotalGigs(): int 
   {
-    return filter_var($this->total_gigs, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_gigs;
   }
 
   //
 
-  public function getTotalServices() 
+  public function getTotalServices(): int 
   {
-    return filter_var($this->total_services, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_services;
   }
 }

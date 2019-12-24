@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\tag\currency;
 
 //
@@ -17,20 +21,20 @@ class Service extends Table
   protected $service_id;
   protected $currency_id;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'service_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'currency_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'service_currency';
+  public const TABLE = 'service_currency';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['service_id']))
     {
@@ -47,35 +51,29 @@ class Service extends Table
 
   // getters
 
-  public function getServiceId() 
+  public function getServiceId(): int 
   {
-    return filter_var($this->service_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->service_id;
   }
 
   //
 
-  public function getCurrencyId() 
+  public function getCurrencyId(): int 
   {
-    return filter_var($this->currency_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->currency_id;
   }
 
   // setters
 
-  public function setServiceId($service_id) 
+  public function setServiceId(int $service_id): void 
   {
-    if (Validate::id($service_id))
-    {
-      $this->service_id = $service_id;
-    }
+    $this->service_id = $service_id;
   }
 
   //
 
-  public function setCurrencyId($currency_id) 
+  public function setCurrencyId(int $currency_id): void 
   {
-    if (Validate::id($currency_id))
-    {
-      $this->currency_id = $currency_id;
-    }
+    $this->currency_id = $currency_id;
   }
 }

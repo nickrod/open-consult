@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\total;
 
 //
@@ -19,44 +23,44 @@ class Location extends Table
   protected $total_gigs;
   protected $total_services;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'location_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_consultants' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_gigs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'location_total';
+  public const TABLE = 'location_total';
 
   // getters
 
-  public function getLocationId() 
+  public function getLocationId(): int
   {
-    return filter_var($this->location_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->location_id;
   }
 
   //
 
-  public function getTotalConsultants() 
+  public function getTotalConsultants(): int 
   {
-    return filter_var($this->total_consultants, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_consultants;
   }
 
   //
 
-  public function getTotalGigs() 
+  public function getTotalGigs(): int 
   {
-    return filter_var($this->total_gigs, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_gigs;
   }
 
   //
 
-  public function getTotalServices() 
+  public function getTotalServices(): int 
   {
-    return filter_var($this->total_services, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_services;
   }
 }

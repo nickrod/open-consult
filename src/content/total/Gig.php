@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\total;
 
 //
@@ -17,28 +21,28 @@ class Gig extends Table
   protected $gig_id;
   protected $total_favorites;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'gig_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'gig_total';
+  public const TABLE = 'gig_total';
 
   // getters
 
-  public function getGigId() 
+  public function getGigId(): int 
   {
-    return filter_var($this->gig_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->gig_id;
   }
 
   //
 
-  public function getTotalFavorites() 
+  public function getTotalFavorites(): int 
   {
-    return filter_var($this->total_favorites, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_favorites;
   }
 }

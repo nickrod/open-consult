@@ -16,9 +16,9 @@ interface ItemInterface
   public function removeLocation();
   public function removeCurrency();
   public function removeFavorite();
-  public function getConsultantTitle();
-  public function getConsultantUrl();
-  public function getImageThumb();
-  public function getUsername();
-  public function getChatOnline();
+  public function getCategory();
+  public function getLocation();
+  public function getCurrency();
+  public function getFavorite();
+  public function getTotal();
 }

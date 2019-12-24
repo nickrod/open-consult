@@ -2,168 +2,186 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\tools;
 
 //
 
-use openconsult\exceptions\OpenConsultException;
+use openconsult\exceptions\SanitizeException;
 
 //
 
 class Sanitize
 {
-  public static function url($str)
+  public static function noHTML(string $str = ''): string
   {
-    if (empty($str))
-    {
-      throw new OpenConsultException(14, __METHOD__);
-    }
-    elseif (!is_string($str))
-    {
-      throw new OpenConsultException(5, __METHOD__);
-    }
-    else
-    {
-      $str = transliterator_transliterate("Any-Latin; Latin-ASCII; [\u0080-\u7fff] Remove; NFD; [:Nonspacing Mark:] Remove; NFC; [:Punctuation:] Remove; Lower();", $str);
-      $str = preg_replace('/[-\s]+/', '-', $str);
-      $str = trim($str, '-');
-
-      //
-
-      return $str;
-    }
+    return htmlentities($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
   }
 
   //
 
-  public static function length($str, $limit = 1000)
+  public static function getBoolean(string $pg_boolean = ''): bool
   {
-    if (empty($str) || empty($limit))
-    {
-      throw new OpenConsultException(14, __METHOD__);
-    }
-    elseif (!is_string($str))
-    {
-      throw new OpenConsultException(5, __METHOD__);
-    }
-    elseif (!is_int($limit))
-    {
-      throw new OpenConsultException(3, __METHOD__);
-    }
-    elseif (!filter_var($limit, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100000000]]))
-    {
-      throw new OpenConsultException(7, __METHOD__);
-    }
-    else
-    {
-      return mb_substr($str, 0, $limit);
-    }
+    return ($pg_boolean === 't');
   }
 
   //
 
-  public static function nullify($column)
+  public static function setBoolean(bool $boolean): string
   {
-    if (empty($column))
+    return ($boolean ? 't' : 'f');
+  }
+
+  //
+
+  public static function arrayToInt(array &$arr): string
+  {
+    $str = '';
+    $key_count = 0;
+
+    //
+
+    foreach ($arr as $key => $value)
     {
-      throw new OpenConsultException(14, __METHOD__);
-    }
-    elseif (!is_array($column))
-    {
-      throw new OpenConsultException(4, __METHOD__);
-    }
-    else
-    {
-      $null_column = [];
+      $int_val = (int) $value;
 
       //
 
-      foreach ($column as $key => $value)
+      if ($int_val > 0)
       {
-        if (is_string($value) && strlen(trim($value)) === 0)
-        {
-          $null_column[$key] = null;
-        }
-        elseif (empty($value))
-        {
-          continue;
-        }
-        else
-        {
-          $null_column[$key] = $value;
-        }
+        $str .= (($key_count === 0) ? '' : ', ') . $int_val;
+        $key_count++;
       }
-
-      //
-
-      return $null_column;
     }
+
+    //
+
+    return $str;
   }
 
   //
 
-  public static function implode_column($glue_inner = '', $glue_outer = '', $type, $column, &$class_column)
+  public static function slugify(string $str): string
   {
-    if (empty($type) || empty($column) || empty($class_column))
-    {
-      throw new OpenConsultException(14, __METHOD__);
-    }
-    elseif ((!empty($glue_inner) && !is_string($glue_inner)) || (!empty($glue_outer) && !is_string($glue_outer)) || !is_string($type))
-    {
-      throw new OpenConsultException(5, __METHOD__);
-    }
-    elseif (!is_array($column) || !is_array($class_column))
-    {
-      throw new OpenConsultException(4, __METHOD__);
-    }
-    elseif ($type != 'order_by' || $type != 'allowed' || $type != 'index' || $type != 'search' || $type != 'key' || $type == 'filter')
-    {
-      continue;
-    }
-    else
-    {
-      $str = '';
-      $filter = '';
+    $str = transliterator_transliterate("Any-Latin; Latin-ASCII; [\u0080-\u7fff] Remove; NFD; [:Nonspacing Mark:] Remove; NFC; [:Punctuation:] Remove; Lower();", $str);
+    $str = preg_replace('/[-\s]+/', '-', $str);
+    $str = trim($str, '-');
 
-      //
+    //
 
-      foreach ($class_column as $key => $value)
+    return $str;
+  }
+
+  //
+
+  public static function length(string $str, int $limit): string
+  {
+    return mb_substr($str, 0, $limit);
+  }
+
+  //
+
+  public static function escapeSearch(string $str): string
+  {
+    return strtr($str, ['_' => '\_', '%' => '\%', '\\' => '\\\\']);
+  }
+
+  //
+
+  public static function column(array &$type, array &$column, array &$column_value): array
+  {
+    $arr = [];
+    $key_count = $allowed_insert_count = $allowed_edit_count = $search_count = $filter_count = $order_by_count = 0;
+
+    //
+
+    foreach ($column_value as $key => &$value)
+    {
+      foreach ($type as $type_value)
       {
-        if (!in_array($key, array_keys($column)))
+        if (!isset($column[$key]))
         {
-          throw new OpenConsultException(25, __METHOD__);
+          throw new SanitizeException('Column key not found: ' . $key);
         }
-        elseif (!isset($column[$key]))
+        elseif (!isset($column[$key][$type_value]))
         {
-          throw new OpenConsultException(15, __METHOD__);
+          throw new SanitizeException('Column type not found: ' . $type_value);
         }
-        elseif (!$column[$key][$type])
+        elseif (!$column[$key][$type_value])
+        {
+          continue;
+        }
+        elseif (!isset($value))
         {
           continue;
         }
         else
         {
-          if ($type == 'filter')
+          if ($type_value === 'key')
           {
-            $filter = implode(',', $options[$key]);
+            $arr[$type_value] .= (($key_count === 0) ? '' : ' AND ') . $key . ' = :' . $key;
+            $key_count++;
           }
-
-          //
-
-          if ($key === array_key_last($class_column))
+          elseif ($type_value === 'allowed')
           {
-            $str .= $key . (empty($glue_inner) ? '' : $glue_inner . $key);
+            if (is_string($value) && trim($value) === '')
+            {
+              $value = null;
+            }
+
+            //
+
+            if (!$column[$key]['key'])
+            {
+              $arr[$type_value] .= (($allowed_edit_count === 0) ? '' : ', ') . $key . ' = :' . $key;
+              $allowed_edit_count++;
+            }
+
+            //
+
+            $arr['allowed_keys'] .= (($allowed_insert_count === 0) ? '' : ', ') . $key;
+            $arr['allowed_values'] .= (($allowed_insert_count === 0) ? '' : ', ') . ':' . $key;
+            $allowed_insert_count++;
+          }
+          elseif ($type_value === 'search')
+          {
+            if (is_string($value) && trim($value) !== '')
+            {
+              $value = self::escapeSearch($value) . '%';
+              $arr[$type_value] .= (($search_count === 0) ? '' : ' OR ') . $key . ' LIKE = :' . $key;
+              $search_count++;
+            }
+          }
+          elseif ($type_value === 'filter')
+          {
+            if (is_array($value))
+            {
+              $in_val = self::arrayToInt($value);
+              $arr[$type_value] .= (($filter_count === 0) ? '' : ' AND ') . $key . ' IN (' . (($in_val !== '') ? $in_val : '0') . ')';
+              $filter_count++;
+            }
+          }
+          elseif ($type_value === 'order_by')
+          {
+            if (is_string($value) && (strtoupper($value) === 'ASC' || strtoupper($value) === 'DESC'))
+            {
+              $arr[$type_value] .= (($order_by_count === 0) ? '' : ', ') . $key . ' ' . $value;
+              $order_by_count++;
+            }
           }
           else
           {
-            $str .= $key . (empty($glue_inner) ? '' : $glue_inner . $key) . $glue_outer;
+            continue;
           }
         }
       }
-
-      //
-
-      return $str;
     }
+
+    //
+
+    return $arr;
   }
 }

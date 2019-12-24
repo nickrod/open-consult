@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\group;
 
 //
@@ -27,9 +31,9 @@ class Location extends Table
   protected $created_date;
   protected $updated_date;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'geoname_id' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false],
     'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => true, 'min_length' => 2, 'max_length' => 200],
@@ -42,13 +46,13 @@ class Location extends Table
     'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'location';
+  public const TABLE = 'location';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['id']))
     {
@@ -100,99 +104,93 @@ class Location extends Table
 
   // getters
 
-  public function getId() 
+  public function getId(): int 
   {
-    return filter_var($this->id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->id;
   }
 
   //
 
-  public function getGeonameId() 
+  public function getGeonameId(): int 
   {
-    return filter_var($this->geoname_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->geoname_id;
   }
 
   //
 
-  public function getTitle() 
+  public function getTitle(): string 
   {
-    return filter_var($this->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML($this->title);
   }
 
   //
 
-  public function getTitleUrl() 
+  public function getTitleUrl(): string 
   {
-    return Sanitize::length($this->title_url, self::$column['title_url']['max_display']);
+    return urlencode(Sanitize::length($this->title_url, self::$column['title_url']['max_display']));
   }
 
   //
 
-  public function getPageTitle() 
+  public function getPageTitle(): string 
   {
-    return filter_var(Sanitize::length($this->page_title, self::$column['page_title']['max_display']), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML(Sanitize::length($this->page_title, self::$column['page_title']['max_display']));
   }
 
   //
 
-  public function getPageDescription() 
+  public function getPageDescription(): string
   {
-    return filter_var(Sanitize::length($this->page_description, self::$column['page_description']['max_display']), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML(Sanitize::length($this->page_description, self::$column['page_description']['max_display']));
   }
 
   //
 
-  public function getPageHeader() 
+  public function getPageHeader(): string 
   {
-    return filter_var(Sanitize::length($this->page_header, self::$column['page_header']['max_display']), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML(Sanitize::length($this->page_header, self::$column['page_header']['max_display']));
   }
 
   //
 
-  public function getFeatured() 
+  public function getFeatured(): bool 
   {
-    return $this->featured;
+    return Sanitize::getBoolean($this->featured);
   }
 
   //
 
-  public function getCreatedDate() 
+  public function getCreatedDate(): string 
   {
     return $this->created_date;
   }
 
   //
 
-  public function getUpdatedDate() 
+  public function getUpdatedDate(): string 
   {
     return $this->updated_date;
   }
 
   // setters
 
-  public function setId($id) 
+  public function setId(int $id): void 
   {
-    if (Validate::id($id))
-    {
-      $this->id = $id;
-    }
+    $this->id = $id;
   }
 
   //
 
-  public function setGeonameId($geoname_id) 
+  public function setGeonameId(int $geoname_id): void 
   {
-    if (Validate::id($geoname_id))
-    {
-      $this->geoname_id = $geoname_id;
-    }
+    $this->geoname_id = $geoname_id;
   }
 
   //
 
-  public function setTitle($title) 
+  public function setTitle(string $title): void 
   {
-    if (Validate::length($title, ['min' => self::$column['title']['min_length'], 'max' => self::$column['title']['max_length']]))
+    if (Validate::strLength($title, ['min' => self::$column['title']['min_length'], 'max' => self::$column['title']['max_length']]))
     {
       $this->title = $title;
       $this->setTitleUrl($title);
@@ -201,19 +199,19 @@ class Location extends Table
 
   //
 
-  private function setTitleUrl($title_url) 
+  private function setTitleUrl(string $title_url): void 
   {
-    if (Validate::length($title_url, ['min' => self::$column['title_url']['min_length'], 'max' => self::$column['title_url']['max_length']]) && $title_url = Sanitize::url($title_url))
+    if (Validate::strLength($title_url, ['min' => self::$column['title_url']['min_length'], 'max' => self::$column['title_url']['max_length']]))
     {
-      $this->title_url = $title_url;
+      $this->title_url = Sanitize::slugify($title_url);
     }
   }
 
   //
 
-  public function setPageTitle($page_title) 
+  public function setPageTitle(string $page_title): void 
   {
-    if (Validate::length($page_title, ['min' => self::$column['page_title']['min_length'], 'max' => self::$column['page_title']['max_length']]))
+    if (Validate::strLength($page_title, ['min' => self::$column['page_title']['min_length'], 'max' => self::$column['page_title']['max_length']]))
     {
       $this->page_title = $page_title;
     }
@@ -221,9 +219,9 @@ class Location extends Table
 
   //
 
-  public function setPageDescription($page_description) 
+  public function setPageDescription(string $page_description): void 
   {
-    if (Validate::length($page_description, ['min' => self::$column['page_description']['min_length'], 'max' => self::$column['page_description']['max_length']]))
+    if (Validate::strLength($page_description, ['min' => self::$column['page_description']['min_length'], 'max' => self::$column['page_description']['max_length']]))
     {
       $this->page_description = $page_description;
     }
@@ -231,9 +229,9 @@ class Location extends Table
 
   //
 
-  public function setPageHeader($page_header) 
+  public function setPageHeader(string $page_header): void 
   {
-    if (Validate::length($page_header, ['min' => self::$column['page_header']['min_length'], 'max' => self::$column['page_header']['max_length']]))
+    if (Validate::strLength($page_header, ['min' => self::$column['page_header']['min_length'], 'max' => self::$column['page_header']['max_length']]))
     {
       $this->page_header = $page_header;
     }
@@ -241,11 +239,8 @@ class Location extends Table
 
   //
 
-  public function setFeatured($featured) 
+  public function setFeatured(bool $featured): void 
   {
-    if (Validate::isBoolean($featured))
-    {
-      $this->featured = $featured;
-    }
+    $this->featured = Sanitize::setBoolean($featured);
   }
 }

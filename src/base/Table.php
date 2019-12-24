@@ -2,14 +2,16 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\base;
 
 //
 
 use openconsult\config\Config;
-use openconsult\tools\Validate;
 use openconsult\tools\Sanitize;
-use openconsult\exceptions\OpenConsultException;
 
 //
 
@@ -17,342 +19,325 @@ class Table implements TableInterface
 {
   // save
 
-  public function save()
+  public function save(): void
   {
     $pdo = Config::getInstance()->getPdo();
-    $vars = Sanitize::nullify(get_object_vars($this));
-    $table_name = $this::TABLE_NAME;
+    $column_value = get_object_vars($this);
+    $column_type = ['allowed'];
+    $column_key = Sanitize::column($column_type, $this::COLUMN, $column_value);
 
     //
 
-    if (empty($pdo))
+    if (isset($column_key['allowed_keys']) && isset($column_key['allowed_values']))
     {
-      throw new OpenConsultException(13, __METHOD__);
-    }
-    elseif (!Validate::column('allowed', $this::$column, array_keys($vars)))
-    {
-      throw new OpenConsultException(16, __METHOD__);
-    }
-    else
-    {
-      $statement = $pdo->prepare("INSERT INTO $table_name (" . implode(", ", array_keys($vars)) . ") VALUES (:" . implode(", :", array_keys($vars)) . ")");
-      $statement->execute($vars);
+      $statement = $pdo->prepare('INSERT INTO ' . $this::TABLE . ' (' . $column_key['allowed_keys'] . ') VALUES (' . $column_key['allowed_values'] . ')');
+      $statement->execute($column_value);
 
       // get last inserted id for auto increment
 
       if (property_exists($this, 'id'))
       {
-        $this->setId((int)$pdo->lastInsertId($table_name . "_id_seq"));
-      }
-      else
-      {
-        throw new OpenConsultException(24, __METHOD__);
+        $this->setId((int) $pdo->lastInsertId($this::TABLE . '_id_seq'));
       }
     }
   }
 
   // edit
 
-  public function edit()
+  public function edit(): void
   {
     $pdo = Config::getInstance()->getPdo();
-    $vars = Sanitize::nullify(get_object_vars($this));
-    $table_name = $this::TABLE_NAME;
-    $keys = '';
-    $values = '';
+    $column_value = get_object_vars($this);
+    $column_type = ['key', 'allowed'];
+    $column_key = Sanitize::column($column_type, $this::COLUMN, $column_value);
 
     //
 
-    if (empty($pdo))
+    if (isset($column_key['key']) && isset($column_key['allowed']))
     {
-      throw new OpenConsultException(13, __METHOD__);
-    }
-    elseif (!$keys = Sanitize::implode_column(' = :', ', ', 'key', $this::$column, array_keys($vars)))
-    {
-      throw new OpenConsultException(19, __METHOD__);
-    }
-    elseif (!$values = Sanitize::implode_column(' = :', ' AND ', 'allowed', $this::$column, array_keys($vars)))
-    {
-      throw new OpenConsultException(20, __METHOD__);
-    }
-    else
-    {
-      $statement = $pdo->prepare("UPDATE $table_name SET $keys WHERE $values");
-      $statement->execute($vars);
+      $statement = $pdo->prepare('UPDATE ' . $this::TABLE . ' SET ' . $column_key['allowed'] . ' WHERE ' . $column_key['key']);
+      $statement->execute($column_value);
     }
   }
 
   // remove
 
-  public function remove()
+  public function remove(): void
   {
     $pdo = Config::getInstance()->getPdo();
-    $vars = Sanitize::nullify(get_object_vars($this));
-    $table_name = $this::TABLE_NAME;
-    $keys = '';
+    $column_value = get_object_vars($this);
+    $column_type = ['key'];
+    $column_key = Sanitize::column($column_type, $this::COLUMN, $column_value);
 
     //
 
-    if (empty($pdo))
+    if (isset($column_key['key']))
     {
-      throw new OpenConsultException(13, __METHOD__);
-    }
-    elseif (!$keys = Sanitize::implode_column(' = :', ' AND ', 'key', $this::$column, array_keys($vars)))
-    {
-      throw new OpenConsultException(19, __METHOD__);
-    }
-    else
-    {
-      $statement = $pdo->prepare("DELETE FROM $table_name WHERE $keys");
-      $statement->execute($vars);
+      $statement = $pdo->prepare('DELETE FROM ' . $this::TABLE . ' WHERE ' . $column_key['key']);
+      $statement->execute($column_value);
     }
   }
 
   // get object
 
-  public static function getObject($column = [], $options = [])
+  public static function getObject(array $option = []): object
   {
     $pdo = Config::getInstance()->getPdo();
-    $class = static::class;
-    $table_name = $class::TABLE_NAME;
-    $class_column = (!empty($options['class_column']) && is_array($options['class_column'])) ? $options['class_column'] : $class::$column;
-    $from = (!empty($options['from']) && is_string($options['from'])) ? $options['from'] : $table_name;
-    $keys = '';
+    $column = (isset($option['column'])) ? $option['column'] : static::class::COLUMN;
+    $from = (isset($option['from'])) ? $option['from'] : static::class::TABLE;
+    $column_type = $column_value = $column_key = [];
 
     //
 
-    if (empty($pdo))
+    if (isset($option['key']))
     {
-      throw new OpenConsultException(13, __METHOD__);
+      $column_type[] = 'key';
+      $column_value += $option['key'];
     }
-    elseif (!$keys = Sanitize::implode_column(' = :', ' AND ', 'key', $class_column, array_keys($column)))
+
+    //
+
+    if ($column_value)
     {
-      throw new OpenConsultException(19, __METHOD__);
+      $column_key = Sanitize::column($column_type, $column, $column_value);
     }
-    else
+
+    //
+
+    if (isset($column_key['key']))
     {
-      $statement = $pdo->prepare("SELECT {$table_name}.* FROM $from WHERE $keys");
-      $statement->execute($column);
+      $statement = $pdo->prepare('SELECT ' . static::class::TABLE . '.*' . ' FROM ' . $from . ' WHERE ' . $column_key['key']);
+      $statement->execute($column_value);
 
       //
 
-      return $statement->fetchObject($class);
+      return $statement->fetchObject(static::class);
+    }
+    else
+    {
+      return null;
     }
   }
 
-  // get a list of objects
+  // get list of objects
 
-  //public static function getList($column = [], $class_column = [], $search_column = [], $order_by_column = [], $from = '', $offset = 0, $limit = 60)
-  public static function getList($column = [], $options = [])
+  public static function getList(array $option = []): array
   {
     $pdo = Config::getInstance()->getPdo();
-    $keys = (!empty($column) && is_array($column)) ? array_keys($column) : [];
-    $vals = (!empty($column) && is_array($column)) ? array_values($column) : [];
-    $class = static::class;
-    $class_column = (!empty($class_column) && is_array($class_column)) ? $class_column : $class::$column;
-    $table_name = $class::TABLE_NAME;
-    $from = (!empty($from) && is_string($from)) ? $from : $table_name;
+    $column = (isset($option['column'])) ? $option['column'] : static::class::COLUMN;
+    $from = (isset($option['from'])) ? $option['from'] : static::class::TABLE;
+    $limit = (isset($option['limit'])) ? (int) $option['limit'] : 100;
+    $offset = (isset($option['offset'])) ? (int) $option['offset'] : 0;
+    $column_type = $column_value = $column_key = [];
 
     //
 
-    if (empty($pdo))
+    if (isset($option['key']))
     {
-      throw new OpenConsultException(13, __METHOD__);
+      $column_type[] = 'key';
+      $column_value += $option['key'];
     }
-    elseif (!Validate::column('index', $class_column, $keys))
+
+    //
+
+    if (isset($option['search']))
     {
-      throw new OpenConsultException(24, __METHOD__);
+      $column_type[] = 'search';
+      $column_value += $option['search'];
     }
-    elseif (!Validate::limit($limit))
+
+    //
+
+    if (isset($option['filter']))
     {
-      throw new OpenConsultException(17, __METHOD__);
+      $column_type[] = 'filter';
+      $column_value += $option['filter'];
     }
-    elseif (!Validate::offset($offset))
+
+    //
+
+    if (isset($option['order_by']))
     {
-      throw new OpenConsultException(18, __METHOD__);
+      $column_type[] = 'order_by';
+      $column_value += $option['order_by'];
+    }
+
+    //
+
+    if ($column_value)
+    {
+      $column_key = Sanitize::column($column_type, $column, $column_value);
+    }
+
+    //
+
+    $key = $search = $filter = $order_by = '';
+    $key = (isset($column_key['key'])) ? ' AND ' . $column_key['key'] : '';
+    $search = (isset($column_key['search'])) ? ' AND (' . $column_key['search'] . ')' : '';
+    $filter = (isset($column_key['filter'])) ? ' AND ' . $column_key['filter'] : '';
+    $order_by = (isset($column_key['order_by'])) ? ' ORDER BY ' . $column_key['order_by'] : '';
+    $statement = null;
+
+    //
+
+    if ($key || $search || $filter)
+    {
+      $statement = $pdo->prepare('SELECT ' . static::class::TABLE . '.*' . ' FROM ' . $from . ' WHERE ' . $key . $search . $filter . $order_by . ' LIMIT ' . $limit . ' OFFSET ' . $offset);
+      $statement->execute($column_value);
     }
     else
     {
-      $order = Sanitize::orderBy($class_column, $order_by_column);
-      $where = "";
-      $statement = "";
-      $list = [];
-
-      //
-
-      if (!empty($order))
-      {
-        $order = "ORDER BY " . $order;
-      }
-
-      //
-
-      if (!empty($keys))
-      {
-        $where = "WHERE " . implode(" = ? AND ", $keys) . " = ?";
-        $statement = $pdo->prepare("SELECT {$table_name}.* FROM $from $where $order LIMIT $limit OFFSET $offset");
-        $statement->execute($vals);
-      }
-      else
-      {
-        $statement = $pdo->query("SELECT {$table_name}.* FROM $from $order LIMIT $limit OFFSET $offset");
-      }
-
-      //
-
-      while ($row = $statement->fetchObject($class))
-      {
-        $list[] = $row;
-      }
-
-      //
-
-      return $list;
+      $statement = $pdo->query('SELECT ' . static::class::TABLE . '.*' . ' FROM ' . $from . $order_by . ' LIMIT ' . $limit . ' OFFSET ' . $offset);
     }
+
+    //
+
+    return $statement->fetchAll(\PDO::FETCH_CLASS, static::class);
   }
 
   // save a list of objects
 
-  public static function saveList($table)
+  public static function saveList(array $table): void
   {
-    if (empty($table))
+    foreach ($table as $key => $value)
     {
-      throw new OpenConsultException(14, __METHOD__);
-    }
-    elseif (!is_array($table))
-    {
-      throw new OpenConsultException(4, __METHOD__);
-    }
-    else
-    {
-      foreach ($table as $key => $value)
+      if (!is_object($value))
       {
-        if ($value instanceof Table)
-        {
-          $value->save();
-        }
-        else
-        {
-          throw new OpenConsultException(6, __METHOD__);
-        }
+        throw new \InvalidArgumentException('Object is required: ' . $value);
+      }
+      elseif (!$value instanceof self)
+      {
+        throw new \InvalidArgumentException('Object instance is invalid: ' . get_class($value));
+      }
+      else
+      {
+        $value->save();
       }
     }
   }
 
   // remove a list of objects
 
-  public static function removeList($table)
+  public static function removeList(array $table): void
   {
-    if (empty($table))
+    foreach ($table as $key => $value)
     {
-      throw new OpenConsultException(14, __METHOD__);
-    }
-    elseif (!is_array($table))
-    {
-      throw new OpenConsultException(4, __METHOD__);
-    }
-    else
-    {
-      foreach ($table as $key => $value)
+      if (!is_object($value))
       {
-        if ($value instanceof Table)
-        {
-          $value->remove();
-        }
-        else
-        {
-          throw new OpenConsultException(6, __METHOD__);
-        }
+        throw new \InvalidArgumentException('Object is required: ' . $value);
+      }
+      elseif (!$value instanceof self)
+      {
+        throw new \InvalidArgumentException('Object instance is invalid: ' . get_class($value));
+      }
+      else
+      {
+        $value->remove();
       }
     }
   }
 
-  // check if exists
+  // check if item exists
 
-  public static function exists($column = [], $options = [])
+  public static function exists(array $option = []): bool
   {
     $pdo = Config::getInstance()->getPdo();
-    $class = static::class;
-    $table_name = $class::TABLE_NAME;
-    $class_column = (!empty($options['class_column']) && is_array($options['class_column'])) ? $options['class_column'] : $class::$column;
-    $from = (!empty($options['from']) && is_string($options['from'])) ? $options['from'] : $table_name;
-    $keys = '';
+    $column = (isset($option['column'])) ? $option['column'] : static::class::COLUMN;
+    $from = (isset($option['from'])) ? $option['from'] : static::class::TABLE;
+    $column_type = $column_value = $column_key = [];
 
     //
 
-    if (empty($pdo))
+    if (isset($option['key']))
     {
-      throw new OpenConsultException(13, __METHOD__);
+      $column_type[] = 'key';
+      $column_value += $option['key'];
     }
-    elseif (!$keys = Sanitize::implode_column(' = :', ' AND ', 'key', $class_column, array_keys($column)))
+
+    //
+
+    if ($column_value)
     {
-      throw new OpenConsultException(19, __METHOD__);
+      $column_key = Sanitize::column($column_type, $column, $column_value);
     }
-    else
+
+    //
+
+    if (isset($column_key['key']))
     {
-      $statement = $pdo->prepare("SELECT 1 FROM $from WHERE $keys");
-      $statement->execute($column);
+      $statement = $pdo->prepare('SELECT 1 FROM ' . $from . ' WHERE ' . $column_key['key']);
+      $statement->execute($column_value);
 
       //
 
-      return $statement->fetchColumn();
+      return (bool) $statement->fetchColumn();
+    }
+    else
+    {
+      return false;
     }
   }
 
   // total count
 
-  public static function total($column = [], $options = [])
+  public static function total(array $option = []): int
   {
     $pdo = Config::getInstance()->getPdo();
-    $class = static::class;
-    $table_name = $class::TABLE_NAME;
-    $class_column = (!empty($options['class_column']) && is_array($options['class_column'])) ? $options['class_column'] : $class::$column;
-    $filter_str = (!empty($options['filter']) && is_array($options['filter'])) ? '(' . implode(',', Validate::filter($options['filter'])) . ')' : '';
-    $from = (!empty($options['from']) && is_string($options['from'])) ? $options['from'] : $table_name;
-    $keys = '';
-    $search = '';
-    $filter = '';
+    $column = (isset($option['column'])) ? $option['column'] : static::class::COLUMN;
+    $from = (isset($option['from'])) ? $option['from'] : static::class::TABLE;
+    $column_type = $column_value = $column_key = [];
 
     //
 
-    if (empty($pdo))
+    if (isset($option['key']))
     {
-      throw new OpenConsultException(13, __METHOD__);
+      $column_type[] = 'key';
+      $column_value += $option['key'];
     }
-    elseif (!$keys = Sanitize::implode_column(' = :', ' AND ', 'key', $class_column, array_keys($column)))
+
+    //
+
+    if (isset($option['search']))
     {
-      throw new OpenConsultException(19, __METHOD__);
+      $column_type[] = 'search';
+      $column_value += $option['search'];
     }
-    elseif (!$search = Sanitize::implode_column(' = :', ' OR ', 'search', $class_column, array_keys($column)))
+
+    //
+
+    if (isset($option['filter']))
     {
-      throw new OpenConsultException(22, __METHOD__);
+      $column_type[] = 'filter';
+      $column_value += $option['filter'];
     }
-    elseif (!$filter = Sanitize::implode_column('', $filter_str, 'filter', $class_column, array_keys($column)))
+
+    //
+
+    if ($column_value)
     {
-      throw new OpenConsultException(21, __METHOD__);
+      $column_key = Sanitize::column($column_type, $column, $column_value);
+    }
+
+    //
+
+    if (isset($column_key['key']))
+    {
+      $search = $filter = '';
+      $search = (isset($column_key['search'])) ? ' AND (' . $column_key['search'] . ')' : '';
+      $filter = (isset($column_key['filter'])) ? ' AND ' . $column_key['filter'] : '';
+
+      //
+
+      $statement = $pdo->prepare('SELECT COUNT(*) AS total FROM ' . $from . ' WHERE ' . $column_key['key'] . $search . $filter);
+      $statement->execute($column_value);
+
+      //
+
+      return (int) $statement->fetchColumn();
     }
     else
     {
-      if (!empty($search))
-      {
-        $search = ' AND (' . $search . ')';
-      }
-
-      //
-
-      if (!empty($filter))
-      {
-        $filter = ' AND (' . $filter . ')';
-      }
-
-      //
-
-      $statement = $pdo->prepare("SELECT COUNT(*) AS total FROM $from WHERE " . $keys . ((!empty($search)) ? (' AND (' . $search . ')') : ''));
-      $statement->execute($column);
-
-      //
-
-      return $statement->fetchColumn();
+      return 0;
     }
   }
 }

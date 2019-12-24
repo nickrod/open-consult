@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\item;
 
 //
@@ -13,14 +17,6 @@ use openconsult\base\Table;
 
 class Item extends Table implements ItemInterface
 {
-  // variables
-
-  protected $consultant_title;
-  protected $consultant_url;
-  protected $image_thumb;
-  protected $username;
-  protected $chat_online;
-
   // getters
 
   public function getConsultantTitle() 
@@ -56,7 +52,7 @@ class Item extends Table implements ItemInterface
     return $this->chat_online;
   }
 
-  // add category
+  // add tags
 
   public function addCategory()
   {
@@ -70,7 +66,7 @@ class Item extends Table implements ItemInterface
     }
   }
 
-  // add location
+  //
 
   public function addLocation()
   {
@@ -84,7 +80,7 @@ class Item extends Table implements ItemInterface
     }
   }
 
-  // add currency
+  //
 
   public function addCurrency()
   {
@@ -98,7 +94,7 @@ class Item extends Table implements ItemInterface
     }
   }
 
-  // add favorite
+  //
 
   public function addFavorite()
   {
@@ -112,7 +108,7 @@ class Item extends Table implements ItemInterface
     }
   }
 
-  // remove category
+  // remove tags
 
   public function removeCategory()
   {
@@ -126,7 +122,7 @@ class Item extends Table implements ItemInterface
     }
   }
 
-  // remove location
+  //
 
   public function removeLocation()
   {
@@ -140,7 +136,7 @@ class Item extends Table implements ItemInterface
     }
   }
 
-  // remove currency
+  //
 
   public function removeCurrency()
   {
@@ -154,7 +150,7 @@ class Item extends Table implements ItemInterface
     }
   }
 
-  // remove favorite
+  //
 
   public function removeFavorite()
   {

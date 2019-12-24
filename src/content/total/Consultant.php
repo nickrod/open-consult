@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\total;
 
 //
@@ -17,28 +21,28 @@ class Consultant extends Table
   protected $consultant_id;
   protected $total_favorites;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'consultant_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'consultant_total';
+  public const TABLE = 'consultant_total';
 
   // getters
 
-  public function getConsultantId() 
+  public function getConsultantId(): int
   {
-    return filter_var($this->consultant_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->consultant_id;
   }
 
   //
 
-  public function getTotalFavorites() 
+  public function getTotalFavorites(): int 
   {
-    return filter_var($this->total_favorites, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_favorites;
   }
 }

@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\group;
 
 //
@@ -32,9 +36,9 @@ class Currency extends Table
   protected $created_date;
   protected $updated_date;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'code' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 6],
     'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 200],
@@ -52,13 +56,13 @@ class Currency extends Table
     'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'currency';
+  public const TABLE = 'currency';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['id']))
     {
@@ -145,124 +149,121 @@ class Currency extends Table
 
   // getters
 
-  public function getId() 
+  public function getId(): int 
   {
-    return filter_var($this->id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->id;
   }
 
   //
 
-  public function getCode() 
+  public function getCode(): string 
   {
-    return filter_var($this->code, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML($this->code);
   }
 
   //
 
-  public function getTitle() 
+  public function getTitle(): string
   {
-    return filter_var($this->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML($this->title);
   }
 
   //
 
-  public function getTitleUrl() 
+  public function getTitleUrl(): string 
   {
-    return Sanitize::length($this->title_url, self::$column['title_url']['max_display']);
+    return urlencode(Sanitize::length($this->title_url, self::$column['title_url']['max_display']));
   }
 
   //
 
-  public function getTitleUnit() 
+  public function getTitleUnit(): string 
   {
-    return filter_var($this->title_unit, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML($this->title_unit);
   }
 
   //
 
-  public function getPageTitle() 
+  public function getPageTitle(): string 
   {
-    return filter_var(Sanitize::length($this->page_title, self::$column['page_title']['max_display']), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML(Sanitize::length($this->page_title, self::$column['page_title']['max_display']));
   }
 
   //
 
-  public function getPageDescription() 
+  public function getPageDescription(): string 
   {
-    return filter_var(Sanitize::length($this->page_description, self::$column['page_description']['max_display']), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML(Sanitize::length($this->page_description, self::$column['page_description']['max_display']));
   }
 
   //
 
-  public function getPageHeader() 
+  public function getPageHeader(): string 
   {
-    return filter_var(Sanitize::length($this->page_header, self::$column['page_header']['max_display']), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML(Sanitize::length($this->page_header, self::$column['page_header']['max_display']));
   }
 
   //
 
-  public function getFeatured() 
+  public function getFeatured(): bool 
   {
-    return $this->featured;
+    return Sanitize::getBoolean($this->featured);
   }
 
   //
 
-  public function getCrypto() 
+  public function getCrypto(): bool 
   {
-    return $this->crypto;
+    return Sanitize::getBoolean($this->crypto);
   }
 
   //
 
-  public function getSymbol() 
+  public function getSymbol(): string 
   {
-    return $this->symbol;
+    return Sanitize::noHTML($this->symbol);
   }
 
   //
 
-  public function getSymbolUnit() 
+  public function getSymbolUnit(): string 
   {
-    return $this->symbol_unit;
+    return Sanitize::noHTML($this->symbol_unit);
   }
 
   //
 
-  public function getMultiplierUnit() 
+  public function getMultiplierUnit(): int 
   {
     return $this->multiplier_unit;
   }
 
   //
 
-  public function getCreatedDate() 
+  public function getCreatedDate(): string 
   {
     return $this->created_date;
   }
 
   //
 
-  public function getUpdatedDate() 
+  public function getUpdatedDate(): string 
   {
     return $this->updated_date;
   }
 
   // setters
 
-  public function setId($id) 
+  public function setId(int $id): void 
   {
-    if (Validate::id($id))
-    {
-      $this->id = $id;
-    }
+    $this->id = $id;
   }
 
   //
 
-  public function setCode($code) 
+  public function setCode(string $code): void 
   {
-    if (Validate::length($code, ['min' => self::$column['code']['min_length'], 'max' => self::$column['code']['max_length']]))
+    if (Validate::strLength($code, ['min' => self::$column['code']['min_length'], 'max' => self::$column['code']['max_length']]))
     {
       $this->code = $code;
     }
@@ -270,9 +271,9 @@ class Currency extends Table
 
   //
 
-  public function setTitle($title) 
+  public function setTitle(string $title): void 
   {
-    if (Validate::length($title, ['min' => self::$column['title']['min_length'], 'max' => self::$column['title']['max_length']]))
+    if (Validate::strLength($title, ['min' => self::$column['title']['min_length'], 'max' => self::$column['title']['max_length']]))
     {
       $this->title = $title;
       $this->setTitleUrl($title);
@@ -281,19 +282,19 @@ class Currency extends Table
 
   //
 
-  private function setTitleUrl($title_url) 
+  private function setTitleUrl(string $title_url): void 
   {
-    if (Validate::length($title_url, ['min' => self::$column['title_url']['min_length'], 'max' => self::$column['title_url']['max_length']]) && $title_url = Sanitize::url($title_url))
+    if (Validate::strLength($title_url, ['min' => self::$column['title_url']['min_length'], 'max' => self::$column['title_url']['max_length']]))
     {
-      $this->title_url = $title_url;
+      $this->title_url = Sanitize::slugify($title_url);
     }
   }
 
   //
 
-  private function setTitleUnit($title_unit) 
+  private function setTitleUnit(string $title_unit): void 
   {
-    if (Validate::length($title_unit, ['min' => self::$column['title_unit']['min_length'], 'max' => self::$column['title_unit']['max_length']]))
+    if (Validate::strLength($title_unit, ['min' => self::$column['title_unit']['min_length'], 'max' => self::$column['title_unit']['max_length']]))
     {
       $this->title_unit = $title_unit;
     }
@@ -301,9 +302,9 @@ class Currency extends Table
 
   //
 
-  public function setPageTitle($page_title) 
+  public function setPageTitle(string $page_title): void 
   {
-    if (Validate::length($page_title, ['min' => self::$column['page_title']['min_length'], 'max' => self::$column['page_title']['max_length']]))
+    if (Validate::strLength($page_title, ['min' => self::$column['page_title']['min_length'], 'max' => self::$column['page_title']['max_length']]))
     {
       $this->page_title = $page_title;
     }
@@ -311,9 +312,9 @@ class Currency extends Table
 
   //
 
-  public function setPageDescription($page_description) 
+  public function setPageDescription(string $page_description): void 
   {
-    if (Validate::length($page_description, ['min' => self::$column['page_description']['min_length'], 'max' => self::$column['page_description']['max_length']]))
+    if (Validate::strLength($page_description, ['min' => self::$column['page_description']['min_length'], 'max' => self::$column['page_description']['max_length']]))
     {
       $this->page_description = $page_description;
     }
@@ -321,9 +322,9 @@ class Currency extends Table
 
   //
 
-  public function setPageHeader($page_header) 
+  public function setPageHeader(string $page_header): void 
   {
-    if (Validate::length($page_header, ['min' => self::$column['page_header']['min_length'], 'max' => self::$column['page_header']['max_length']]))
+    if (Validate::strLength($page_header, ['min' => self::$column['page_header']['min_length'], 'max' => self::$column['page_header']['max_length']]))
     {
       $this->page_header = $page_header;
     }
@@ -331,29 +332,23 @@ class Currency extends Table
 
   //
 
-  public function setFeatured($featured) 
+  public function setFeatured(bool $featured): void 
   {
-    if (Validate::isBoolean($featured))
-    {
-      $this->featured = $featured;
-    }
+    $this->featured = Sanitize::setBoolean($featured);
   }
 
   //
 
-  public function setCrypto($crypto) 
+  public function setCrypto(bool $crypto): void 
   {
-    if (Validate::isBoolean($crypto))
-    {
-      $this->crypto = $crypto;
-    }
+    $this->crypto = Sanitize::setBoolean($crypto);
   }
 
   //
 
-  public function setSymbol($symbol) 
+  public function setSymbol(string $symbol): void 
   {
-    if (Validate::length($symbol, ['min' => self::$column['symbol']['min_length'], 'max' => self::$column['symbol']['max_length']]) && Validate::symbol($symbol))
+    if (Validate::strLength($symbol, ['min' => self::$column['symbol']['min_length'], 'max' => self::$column['symbol']['max_length']]))
     {
       $this->symbol = $symbol;
     }
@@ -361,9 +356,9 @@ class Currency extends Table
 
   //
 
-  public function setSymbolUnit($symbol_unit) 
+  public function setSymbolUnit(string $symbol_unit): void 
   {
-    if (Validate::length($symbol_unit, ['min' => self::$column['symbol_unit']['min_length'], 'max' => self::$column['symbol_unit']['max_length']]) && Validate::symbol($symbol_unit))
+    if (Validate::strLength($symbol_unit, ['min' => self::$column['symbol_unit']['min_length'], 'max' => self::$column['symbol_unit']['max_length']]))
     {
       $this->symbol_unit = $symbol_unit;
     }
@@ -371,9 +366,9 @@ class Currency extends Table
 
   //
 
-  public function setMultiplierUnit($multiplier_unit) 
+  public function setMultiplierUnit(int $multiplier_unit): void 
   {
-    if (Validate::length($multiplier_unit, ['min' => self::$column['multiplier_unit']['min_length'], 'max' => self::$column['multiplier_unit']['max_length']]))
+    if (Validate::intLength($multiplier_unit, ['min' => self::$column['multiplier_unit']['min_length'], 'max' => self::$column['multiplier_unit']['max_length']]))
     {
       $this->multiplier_unit = $multiplier_unit;
     }

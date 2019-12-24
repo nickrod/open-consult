@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\tag\favorite;
 
 //
@@ -17,20 +21,20 @@ class Gig extends Table
   protected $gig_id;
   protected $account_id;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'gig_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'account_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'gig_favorite';
+  public const TABLE = 'gig_favorite';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['gig_id']))
     {
@@ -47,35 +51,29 @@ class Gig extends Table
 
   // getters
 
-  public function getGigId() 
+  public function getGigId(): int 
   {
-    return filter_var($this->gig_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->gig_id;
   }
 
   //
 
-  public function getAccountId() 
+  public function getAccountId(): int 
   {
-    return filter_var($this->account_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->account_id;
   }
 
   // setters
 
-  public function setGigId($gig_id) 
+  public function setGigId(int $gig_id): void 
   {
-    if (Validate::id($gig_id))
-    {
-      $this->gig_id = $gig_id;
-    }
+    $this->gig_id = $gig_id;
   }
 
   //
 
-  public function setAccountId($account_id) 
+  public function setAccountId(int $account_id): void 
   {
-    if (Validate::id($account_id))
-    {
-      $this->account_id = $account_id;
-    }
+    $this->account_id = $account_id;
   }
 }

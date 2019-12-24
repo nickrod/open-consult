@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\tag\favorite;
 
 //
@@ -17,20 +21,20 @@ class Consultant extends Table
   protected $consultant_id;
   protected $account_id;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'consultant_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'account_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'consultant_favorite';
+  public const TABLE = 'consultant_favorite';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['consultant_id']))
     {
@@ -47,35 +51,29 @@ class Consultant extends Table
 
   // getters
 
-  public function getConsultantId() 
+  public function getConsultantId(): int 
   {
-    return filter_var($this->consultant_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->consultant_id;
   }
 
   //
 
-  public function getAccountId() 
+  public function getAccountId(): int 
   {
-    return filter_var($this->account_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->account_id;
   }
 
   // setters
 
-  public function setConsultantId($consultant_id) 
+  public function setConsultantId(int $consultant_id): void 
   {
-    if (Validate::id($consultant_id))
-    {
-      $this->consultant_id = $consultant_id;
-    }
+    $this->consultant_id = $consultant_id;
   }
 
   //
 
-  public function setAccountId($account_id) 
+  public function setAccountId(int $account_id): void 
   {
-    if (Validate::id($account_id))
-    {
-      $this->account_id = $account_id;
-    }
+    $this->account_id = $account_id;
   }
 }

@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\tag\category;
 
 //
@@ -17,20 +21,20 @@ class Gig extends Table
   protected $gig_id;
   protected $category_id;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'gig_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'category_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'gig_category';
+  public const TABLE = 'gig_category';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['gig_id']))
     {
@@ -47,35 +51,29 @@ class Gig extends Table
 
   // getters
 
-  public function getGigId() 
+  public function getGigId(): int 
   {
-    return filter_var($this->gig_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->gig_id;
   }
 
   //
 
-  public function getCategoryId() 
+  public function getCategoryId(): int 
   {
-    return filter_var($this->category_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->category_id;
   }
 
   // setters
 
-  public function setGigId($gig_id) 
+  public function setGigId(int $gig_id): void 
   {
-    if (Validate::id($gig_id))
-    {
-      $this->gig_id = $gig_id;
-    }
+    $this->gig_id = $gig_id;
   }
 
   //
 
-  public function setCategoryId($category_id) 
+  public function setCategoryId(int $category_id): void 
   {
-    if (Validate::id($category_id))
-    {
-      $this->category_id = $category_id;
-    }
+    $this->category_id = $category_id;
   }
 }

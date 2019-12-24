@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\tag\location;
 
 //
@@ -17,20 +21,20 @@ class Gig extends Table
   protected $gig_id;
   protected $location_id;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'gig_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'location_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'gig_location';
+  public const TABLE = 'gig_location';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['gig_id']))
     {
@@ -47,35 +51,29 @@ class Gig extends Table
 
   // getters
 
-  public function getGigId() 
+  public function getGigId(): int 
   {
-    return filter_var($this->gig_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->gig_id;
   }
 
   //
 
-  public function getLocationId() 
+  public function getLocationId(): int 
   {
-    return filter_var($this->location_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->location_id;
   }
 
   // setters
 
-  public function setGigId($gig_id) 
+  public function setGigId(int $gig_id): void 
   {
-    if (Validate::id($gig_id))
-    {
-      $this->gig_id = $gig_id;
-    }
+    $this->gig_id = $gig_id;
   }
 
   //
 
-  public function setLocationId($location_id) 
+  public function setLocationId(int $location_id): void 
   {
-    if (Validate::id($location_id))
-    {
-      $this->location_id = $location_id;
-    }
+    $this->location_id = $location_id;
   }
 }

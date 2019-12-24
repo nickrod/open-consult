@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\total;
 
 //
@@ -20,9 +24,9 @@ class Category extends Table
   protected $total_gigs;
   protected $total_services;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'category_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_blogs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_consultants' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
@@ -30,42 +34,42 @@ class Category extends Table
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'category_total';
+  public const TABLE = 'category_total';
 
   // getters
 
-  public function getCategoryId() 
+  public function getCategoryId(): int
   {
-    return filter_var($this->category_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->category_id;
   }
 
   //
 
-  public function getTotalBlogs() 
+  public function getTotalBlogs(): int 
   {
-    return filter_var($this->total_blogs, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_blogs;
   }
 
   //
 
-  public function getTotalConsultants() 
+  public function getTotalConsultants(): int 
   {
-    return filter_var($this->total_consultants, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_consultants;
   }
 
   //
 
-  public function getTotalGigs() 
+  public function getTotalGigs(): int 
   {
-    return filter_var($this->total_gigs, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_gigs;
   }
 
   //
 
-  public function getTotalServices() 
+  public function getTotalServices(): int 
   {
-    return filter_var($this->total_services, FILTER_SANITIZE_NUMBER_INT);
+    return $this->total_services;
   }
 }

@@ -2,13 +2,16 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\config;
 
 //
 
 use PDO;
 use PDOException;
-use Mobile_Detect;
 use openconsult\exceptions\OpenConsultException;
 use openconsult\tools\Singleton;
 
@@ -46,99 +49,155 @@ class Config extends Singleton
 
   // site url
 
-  private const SITE_URL = "https://www.simpleconsulting.io/";
+  private $site_url = "https://www.simpleconsulting.io/";
 
   // constructor
 
-  public function __construct()
+  public function __construct(array $column = [])
   {
-    // set the session
-
-    if (!session_id())
+    if (isset($column['dsn']))
     {
-      session_start();
+      $this->setDsn($column['dsn']);
     }
-
-    // detect mobile and set session var
-
-    if (!isset($_SESSION['is_mobile']))
-    {
-      $detect = new Mobile_Detect();
-
-      //
-
-      if ($detect->isMobile())
-      {
-        $_SESSION['is_mobile'] = 1;
-      }
-      else
-      {
-        $_SESSION['is_mobile'] = 0;
-      }
-    }
-
-    // load db options
-
-    $this->loadDbSettings();
 
     //
 
-    if (!empty($this->dsn) && !empty($this->username) && !empty($this->password) && !empty($this->pdo_options))
+    if (isset($column['username']))
     {
-      try
-      {
-        $this->pdo = new PDO($this->dsn, $this->username, $this->password, $this->pdo_options);
-      }
-      catch (PDOException $e)
-      {
-        throw new PDOException($e->getMessage(), (int)$e->getCode());
-      }
+      $this->setUsername($column['username']);
     }
+
+    //
+
+    if (isset($column['password']))
+    {
+      $this->setPassword($column['password']);
+    }
+
+    //
+
+    if (isset($column['pdo_options']))
+    {
+      $this->setPdoOptions($column['pdo_options']);
+    }
+
+    //
+
+    if (isset($column['db_settings']))
+    {
+      $this->setDbSettings($column['db_settings']);
+    }
+
+    //
+
+    if (isset($column['site_url']))
+    {
+      $this->setSiteUrl($column['site_url']);
+    }
+
+    // setup pdo object
+
+    $this->setPdo();
   }
 
   // getters
 
-	public function getPdo()
+	public function getPdo(): PDO
   {
     return $this->pdo;
 	}
 
+  //
+
+	public function getSiteUrl(): string
+  {
+    return $this->site_url;
+	}
+
   // setters
 
-	public function setDbSettings($db_settings)
+	public function setDsn(string $dsn): void
   {
-    if (file_exists($db_settings))
+    $this->dsn = $dsn;
+  }
+
+  //
+
+	public function setUsername(string $username): void
+  {
+    $this->username = $username;
+  }
+
+  //
+
+	public function setPassword(string $password): void
+  {
+    $this->password = $password;
+  }
+
+  //
+
+	public function setSiteUrl(string $site_url): void
+  {
+    if (!filter_var($site_url, FILTER_VALIDATE_URL))
+    {
+      throw new \InvalidArgumentException('Site url is invalid: ' . $site_url);
+    }
+    else
+    {
+      $this->site_url = $site_url;
+    }
+  }
+
+  //
+
+	public function setDbSettings(string $db_settings): void
+  {
+    if (!file_exists($db_settings))
+    {
+      throw new \InvalidArgumentException('Db settings file does not exist: ' . $db_settings);
+    }
+    else
     {
       $this->db_settings = $db_settings;
+      $this->loadDbSettings();
     }
 	}
 
   //
 
-	public function setPdoOptions($pdo_options)
+	public function setPdoOptions(array $pdo_options): void
   {
-    if (is_array($pdo_options))
+    $this->pdo_options = $pdo_options;
+	}
+
+  //
+
+	private function setPdo(): void
+  {
+    try
     {
-      $this->pdo_options = $pdo_options;
+      $this->pdo = new PDO($this->dsn, $this->username, $this->password, $this->pdo_options);
+    }
+    catch (PDOException $e)
+    {
+      throw new PDOException($e->getMessage(), (int) $e->getCode());
     }
 	}
 
   //
 
-  private function loadDbSettings()
+  private function loadDbSettings(): void
   {
-    if (!empty($this->db_settings) && file_exists($this->db_settings))
+    if (!$settings = parse_ini_file($this->db_settings, true))
     {
-      if (!$settings = parse_ini_file($this->db_settings, true))
-      {
-        throw new OpenConsultException(27, __METHOD__);
-      }
-
-      //
-
-      $this->dsn = $settings['database']['driver'] . ':host=' . $settings['database']['host'] . ';port=' . $settings['database']['port'] . ';dbname=' . $settings['database']['dbname'] . ";options='-c client_encoding=" . $settings['database']['charset'] . "'";
-      $this->username = $settings['database']['username'];
-      $this->password = $settings['database']['password'];
+      throw new \InvalidArgumentException('Db settings file cannot be parsed: ' . $this->db_settings);
+    }
+    else
+    {
+      $this->setDsn($settings['database']['driver'] . ':host=' . $settings['database']['host'] . ';port=' . $settings['database']['port'] . ';dbname=' . $settings['database']['dbname'] . ';options=\'-c client_encoding=' . $settings['database']['charset'] . '\'');
+      $this->setUsername($settings['database']['username']);
+      $this->setPassword($settings['database']['password']);
     }
   }
 }

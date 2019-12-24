@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\tag\category;
 
 //
@@ -17,20 +21,20 @@ class Blog extends Table
   protected $blog_id;
   protected $category_id;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'blog_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'category_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'blog_category';
+  public const TABLE = 'blog_category';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['blog_id']))
     {
@@ -47,35 +51,29 @@ class Blog extends Table
 
   // getters
 
-  public function getBlogId() 
+  public function getBlogId(): int 
   {
-    return filter_var($this->blog_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->blog_id;
   }
 
   //
 
-  public function getCategoryId() 
+  public function getCategoryId(): int 
   {
-    return filter_var($this->category_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->category_id;
   }
 
   // setters
 
-  public function setBlogId($blog_id) 
+  public function setBlogId(int $blog_id): void 
   {
-    if (Validate::id($blog_id))
-    {
-      $this->blog_id = $blog_id;
-    }
+    $this->blog_id = $blog_id;
   }
 
   //
 
-  public function setCategoryId($category_id) 
+  public function setCategoryId(int $category_id): void 
   {
-    if (Validate::id($category_id))
-    {
-      $this->category_id = $category_id;
-    }
+    $this->category_id = $category_id;
   }
 }

@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\tag\partner;
 
 //
@@ -17,20 +21,20 @@ class Service extends Table
   protected $service_id;
   protected $account_id;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'service_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'account_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'service_partner';
+  public const TABLE = 'service_partner';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['service_id']))
     {
@@ -47,35 +51,29 @@ class Service extends Table
 
   // getters
 
-  public function getServiceId() 
+  public function getServiceId(): int 
   {
-    return filter_var($this->service_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->service_id;
   }
 
   //
 
-  public function getAccountId() 
+  public function getAccountId(): int 
   {
-    return filter_var($this->account_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->account_id;
   }
 
   // setters
 
-  public function setServiceId($service_id) 
+  public function setServiceId(int $service_id): void 
   {
-    if (Validate::id($service_id))
-    {
-      $this->service_id = $service_id;
-    }
+    $this->service_id = $service_id;
   }
 
   //
 
-  public function setAccountId($account_id) 
+  public function setAccountId(int $account_id): void 
   {
-    if (Validate::id($account_id))
-    {
-      $this->account_id = $account_id;
-    }
+    $this->account_id = $account_id;
   }
 }

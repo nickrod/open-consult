@@ -2,6 +2,10 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\tag\currency;
 
 //
@@ -17,20 +21,20 @@ class Gig extends Table
   protected $gig_id;
   protected $currency_id;
 
-  // columns
+  // constants
 
-  public static $column = [
+  public const COLUMN = [
     'gig_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'currency_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
 
-  // constants
+  //
 
-  public const TABLE_NAME = 'gig_currency';
+  public const TABLE = 'gig_currency';
 
   // constructor
 
-  public function __construct($column = [])
+  public function __construct(array $column = [])
   {
     if (isset($column['gig_id']))
     {
@@ -47,35 +51,29 @@ class Gig extends Table
 
   // getters
 
-  public function getGigId() 
+  public function getGigId(): int 
   {
-    return filter_var($this->gig_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->gig_id;
   }
 
   //
 
-  public function getCurrencyId() 
+  public function getCurrencyId(): int 
   {
-    return filter_var($this->currency_id, FILTER_SANITIZE_NUMBER_INT);
+    return $this->currency_id;
   }
 
   // setters
 
-  public function setGigId($gig_id) 
+  public function setGigId(int $gig_id): void 
   {
-    if (Validate::id($gig_id))
-    {
-      $this->gig_id = $gig_id;
-    }
+    $this->gig_id = $gig_id;
   }
 
   //
 
-  public function setCurrencyId($currency_id) 
+  public function setCurrencyId(int $currency_id): void 
   {
-    if (Validate::id($currency_id))
-    {
-      $this->currency_id = $currency_id;
-    }
+    $this->currency_id = $currency_id;
   }
 }
