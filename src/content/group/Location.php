@@ -33,11 +33,15 @@ class Location extends Table
 
   // constants
 
+  public const TABLE = 'location';
+
+  //
+
   public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'geoname_id' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false],
     'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => true, 'min_length' => 2, 'max_length' => 200],
-    'title_url' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'max_display' => 80],
+    'title_url' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'max_display' => 80],
     'page_title' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 0, 'max_length' => 300, 'max_display' => 200],
     'page_description' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 0, 'max_length' => 300, 'max_display' => 200],
     'page_header' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 0, 'max_length' => 300, 'max_display' => 200],
@@ -45,10 +49,6 @@ class Location extends Table
     'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
-
-  //
-
-  public const TABLE = 'location';
 
   // constructor
 
@@ -127,28 +127,28 @@ class Location extends Table
 
   public function getTitleUrl(): string 
   {
-    return urlencode(Sanitize::length($this->title_url, self::$column['title_url']['max_display']));
+    return Sanitize::noHTML(urlencode(Sanitize::length($this->title_url, self::COLUMN['title_url']['max_display'])));
   }
 
   //
 
   public function getPageTitle(): string 
   {
-    return Sanitize::noHTML(Sanitize::length($this->page_title, self::$column['page_title']['max_display']));
+    return Sanitize::noHTML(Sanitize::length($this->page_title, self::COLUMN['page_title']['max_display']));
   }
 
   //
 
   public function getPageDescription(): string
   {
-    return Sanitize::noHTML(Sanitize::length($this->page_description, self::$column['page_description']['max_display']));
+    return Sanitize::noHTML(Sanitize::length($this->page_description, self::COLUMN['page_description']['max_display']));
   }
 
   //
 
   public function getPageHeader(): string 
   {
-    return Sanitize::noHTML(Sanitize::length($this->page_header, self::$column['page_header']['max_display']));
+    return Sanitize::noHTML(Sanitize::length($this->page_header, self::COLUMN['page_header']['max_display']));
   }
 
   //
@@ -190,7 +190,7 @@ class Location extends Table
 
   public function setTitle(string $title): void 
   {
-    if (Validate::strLength($title, ['min' => self::$column['title']['min_length'], 'max' => self::$column['title']['max_length']]))
+    if (Validate::strLength($title, ['min' => self::COLUMN['title']['min_length'], 'max' => self::COLUMN['title']['max_length']]))
     {
       $this->title = $title;
       $this->setTitleUrl($title);
@@ -201,7 +201,7 @@ class Location extends Table
 
   private function setTitleUrl(string $title_url): void 
   {
-    if (Validate::strLength($title_url, ['min' => self::$column['title_url']['min_length'], 'max' => self::$column['title_url']['max_length']]))
+    if (Validate::strLength($title_url, ['min' => self::COLUMN['title_url']['min_length'], 'max' => self::COLUMN['title_url']['max_length']]))
     {
       $this->title_url = Sanitize::slugify($title_url);
     }
@@ -211,7 +211,7 @@ class Location extends Table
 
   public function setPageTitle(string $page_title): void 
   {
-    if (Validate::strLength($page_title, ['min' => self::$column['page_title']['min_length'], 'max' => self::$column['page_title']['max_length']]))
+    if (Validate::strLength($page_title, ['min' => self::COLUMN['page_title']['min_length'], 'max' => self::COLUMN['page_title']['max_length']]))
     {
       $this->page_title = $page_title;
     }
@@ -221,7 +221,7 @@ class Location extends Table
 
   public function setPageDescription(string $page_description): void 
   {
-    if (Validate::strLength($page_description, ['min' => self::$column['page_description']['min_length'], 'max' => self::$column['page_description']['max_length']]))
+    if (Validate::strLength($page_description, ['min' => self::COLUMN['page_description']['min_length'], 'max' => self::COLUMN['page_description']['max_length']]))
     {
       $this->page_description = $page_description;
     }
@@ -231,7 +231,7 @@ class Location extends Table
 
   public function setPageHeader(string $page_header): void 
   {
-    if (Validate::strLength($page_header, ['min' => self::$column['page_header']['min_length'], 'max' => self::$column['page_header']['max_length']]))
+    if (Validate::strLength($page_header, ['min' => self::COLUMN['page_header']['min_length'], 'max' => self::COLUMN['page_header']['max_length']]))
     {
       $this->page_header = $page_header;
     }

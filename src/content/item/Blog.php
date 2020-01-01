@@ -12,7 +12,7 @@ namespace openconsult\content\item;
 
 use openconsult\tools\Validate;
 use openconsult\tools\Sanitize;
-use openconsult\account\user\User;
+use openconsult\account\Account;
 use openconsult\content\group\Category;
 
 //
@@ -36,29 +36,28 @@ class Blog extends Item
 
   // constants
 
+  public const TABLE = 'blog';
+  public const CATEGORY = 'openconsult\content\tag\category\Blog';
+  public const FAVORITE = 'openconsult\content\tag\favorite\Blog';
+  public const TOTAL = 'openconsult\content\total\Blog';
+
+  //
+
   public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => false],
     'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => true, 'min_length' => 2, 'max_length' => 200, 'search' => true],
     'title_short' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 100, 'search' => false],
-    'title_url' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'search' => false],
+    'title_url' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'search' => false],
     'description' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => true],
     'description_short' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'canonical_url' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'image' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'consultant_id' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'search' => false],
-    'featured' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
+    'featured' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'search' => false],
     'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false],
     'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false],
-    'category_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true],
-    'favorite_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true]
+    'category_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true, 'filter_join' => self::CATEGORY::TABLE]
   ];
-
-  //
-
-  public const TABLE = 'blog';
-  public const CATEGORY = 'openconsult\content\tag\category\Blog';
-  public const FAVORITE = 'openconsult\content\tag\favorite\Blog';
-  public const TOTAL = 'openconsult\content\total\Blog';
 
   // constructor
 
@@ -106,6 +105,13 @@ class Blog extends Item
 
     //
 
+    if (isset($column['image']))
+    {
+      $this->setImage($column['image']);
+    }
+
+    //
+
     if (isset($column['consultant_id']))
     {
       $this->setConsultantId($column['consultant_id']);
@@ -128,115 +134,84 @@ class Blog extends Item
 
   //
 
-  public function getTitle() 
+  public function getTitle(): string 
   {
-    return filter_var($this->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML($this->title);
   }
 
   //
 
-  public function getTitleShort() 
+  public function getTitleShort(): string 
   {
-    return filter_var($this->title_short, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML($this->title_short);
   }
 
   //
 
-  public function getTitleUrl() 
+  public function getTitleUrl(): string 
   {
     return filter_var($this->title_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   }
 
   //
 
-  public function getDescription() 
+  public function getDescription(): string 
   {
-    return $this->description;
+    return Sanitize::noHTML($this->description);
   }
 
   //
 
-  public function getDescriptionShort() 
+  public function getDescriptionShort(): string 
   {
-    return $this->description_short;
+    return Sanitize::noHTML($this->description_short);
   }
 
   //
 
-  public function getCanonicalUrl() 
+  public function getCanonicalUrl(): string 
   {
     return $this->canonical_url;
   }
 
   //
 
-  public function getConsultantId() 
+  public function getConsultantId(): int 
   {
     return $this->consultant_id;
   }
 
   //
 
-  public function getFeatured() 
+  public function getFeatured(): bool 
   {
-    return $this->featured;
+    return Sanitize::getBoolean($this->featured);
   }
 
   //
 
-  public function getCreatedDate() 
+  public function getCreatedDate(): string 
   {
-    return $this->created_date;
+    return Sanitize::noHTML($this->created_date);
   }
 
   //
 
-  public function getUpdatedDate() 
+  public function getUpdatedDate(): string 
   {
-    return $this->updated_date;
-  }
-
-  //
-
-  public function getCategory()
-  {
-    return Category::getList(['blog_id' => $this->id], BlogCategory::$column, 'category INNER JOIN blog_category ON category.id = blog_category.category_id');
-  }
-
-  //
-
-  public function getTotal()
-  {
-    return BlogTotal::getObject(["blog_id" => $this->id]);
-  }
-
-  //
-
-  public function getFavorite()
-  {
-    return User::getList(["blog_id" => $this->id], BlogFavorite::$column, "account INNER JOIN blog_favorite ON account.id = blog_favorite.account_id");
-  }
-
-  //
-
-  public function getRelated()
-  {
-    return Blog::getList(["blog_id" => $this->id], BlogCategory::$column, "blog INNER JOIN blog_category ON account.id = blog_favorite.account_id GROUP BY blog.id");
+    return Sanitize::noHTML($this->updated_date);
   }
 
   // setters
 
-  public function setId($id) 
+  public function setId(int $id): void 
   {
-    if (Validate::validateId($id))
-    {
-      $this->id = $id;
-    }
+    $this->id = $id;
   }
 
   //
 
-  public function setTitle($title) 
+  public function setTitle(string $title): void 
   {
     if (Validate::validateEmail($email))
     {
@@ -273,49 +248,15 @@ class Blog extends Item
 
   //
 
-  public function setConsultantId($consultant_id) 
+  public function setConsultantId(int $consultant_id): void 
   {
-    if (Validate::validateBoolean($enabled))
-    {
-      $this->consultant_id = $consultant_id;
-    }
+    $this->consultant_id = $consultant_id;
   }
 
   //
 
-  public function setFeatured($featured) 
+  public function setFeatured(bool $featured): void 
   {
-    if (Validate::validateBoolean($featured))
-    {
-      $this->featured = $featured;
-    }
-  }
-
-  //
-
-  public function setCategory($category) 
-  {
-    $this->category = $category;
-  }
-
-  //
-
-  public function setTotal($total) 
-  {
-    $this->total = $total;
-  }
-
-  //
-
-  public function setFavorite($favorite) 
-  {
-    $this->favorite = $favorite;
-  }
-
-  //
-
-  public function setRelated($related) 
-  {
-    $this->related = $related;
+    $this->featured = Sanitize::setBoolean($featured);
   }
 }

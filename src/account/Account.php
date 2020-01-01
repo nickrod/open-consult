@@ -33,6 +33,10 @@ class Account extends Table
 
   // constants
 
+  public const TABLE = 'account';
+
+  //
+
   public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'email' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 3, 'max_length' => 100],
@@ -45,10 +49,6 @@ class Account extends Table
     'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
-
-  //
-
-  public const TABLE = 'account';
 
   // constructor
 
@@ -134,7 +134,7 @@ class Account extends Table
 
   public function getUsername(): string 
   {
-    return urlencode($this->username);
+    return Sanitize::noHTML(urlencode($this->username));
   }
 
   //
@@ -169,14 +169,14 @@ class Account extends Table
 
   public function getCreatedDate(): string 
   {
-    return Sanitize::noHTML($this->created_date);
+    return $this->created_date;
   }
 
   //
 
   public function getUpdatedDate(): string 
   {
-    return Sanitize::noHTML($this->updated_date);
+    return $this->updated_date;
   }
 
   // setters
@@ -190,7 +190,7 @@ class Account extends Table
 
   public function setEmail(string $email): void 
   {
-    if (Validate::strLength($email, ['min' => self::$column['email']['min_length'], 'max' => self::$column['email']['max_length']]))
+    if (Validate::strLength($email, ['min' => self::COLUMN['email']['min_length'], 'max' => self::COLUMN['email']['max_length']]))
     {
       if (!filter_var($email, FILTER_VALIDATE_EMAIL))
       {
@@ -207,7 +207,7 @@ class Account extends Table
 
   public function setNickname(string $nickname): void 
   {
-    if (Validate::strLength($nickname, ['min' => self::$column['nickname']['min_length'], 'max' => self::$column['nickname']['max_length']]))
+    if (Validate::strLength($nickname, ['min' => self::COLUMN['nickname']['min_length'], 'max' => self::COLUMN['nickname']['max_length']]))
     {
       $this->nickname = $nickname;
     }
@@ -217,7 +217,7 @@ class Account extends Table
 
   public function setUsername(string $username): void 
   {
-    if (Validate::strLength($username, ['min' => self::$column['username']['min_length'], 'max' => self::$column['username']['max_length']]))
+    if (Validate::strLength($username, ['min' => self::COLUMN['username']['min_length'], 'max' => self::COLUMN['username']['max_length']]))
     {
       $this->username = Sanitize::slugify($username);
     }
@@ -227,7 +227,7 @@ class Account extends Table
 
   public function setPassword(string $password): void 
   {
-    if (Validate::strLength($password, ['min' => self::$column['password']['min_length'], 'max' => self::$column['password']['max_length']]))
+    if (Validate::strLength($password, ['min' => self::COLUMN['password']['min_length'], 'max' => self::COLUMN['password']['max_length']]))
     {
       $this->password = $password;
     }
@@ -237,7 +237,7 @@ class Account extends Table
 
   public function setPubkey(string $pubkey): void 
   {
-    if (Validate::strLength($pubkey, ['min' => self::$column['pubkey']['min_length']]))
+    if (Validate::strLength($pubkey, ['min' => self::COLUMN['pubkey']['min_length']]))
     {
       $this->pubkey = $pubkey;
     }

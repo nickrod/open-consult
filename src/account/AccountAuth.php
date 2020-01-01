@@ -32,6 +32,10 @@ class AccountAuth extends Table
 
   // constants
 
+  public const TABLE = 'account_auth';
+
+  //
+
   public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'selector' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 1, 'max_length' => 100],
@@ -43,10 +47,6 @@ class AccountAuth extends Table
     'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'expired_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
-
-  //
-
-  public const TABLE = 'account_auth';
 
   // constructor
 
@@ -174,7 +174,7 @@ class AccountAuth extends Table
 
   public function setSelector(string $selector): void 
   {
-    if (Validate::strLength($selector, ['min' => self::$column['selector']['min_length'], 'max' => self::$column['selector']['max_length']]))
+    if (Validate::strLength($selector, ['min' => self::COLUMN['selector']['min_length'], 'max' => self::COLUMN['selector']['max_length']]))
     {
       $this->selector = $selector;
     }
@@ -184,7 +184,7 @@ class AccountAuth extends Table
 
   public function setHashedValidator(string $hashed_validator): void 
   {
-    if (Validate::strLength($hashed_validator, ['min' => self::$column['hashed_validator']['min_length']]))
+    if (Validate::strLength($hashed_validator, ['min' => self::COLUMN['hashed_validator']['min_length']]))
     {
       $this->hashed_validator = $hashed_validator;
     }

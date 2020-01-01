@@ -234,8 +234,8 @@ CREATE TABLE city (
   title TEXT NOT NULL,
   title_region TEXT,
   title_combined TEXT,
-  latitude DECIMAL(7,5),
-  longitude DECIMAL(8,5),
+  latitude REAL,
+  longitude REAL,
   country_code CHAR(2),
   region_code TEXT,
   UNIQUE(title_combined),
@@ -661,7 +661,7 @@ INNER JOIN item_view ON consultant.account_id = item_view.item_view_id;
 
 CREATE VIEW consultant_short_view
 AS
-SELECT consultant.id AS consultant_short_view_id, consultant.title AS consultant_title, consultant.title_url AS consultant_url, image_thumb, username, chat_online
+SELECT consultant.id AS consultant_short_view_id, account_id, consultant.title AS consultant_title, consultant.title_url AS consultant_url, image_thumb, username, chat_online
 FROM consultant
 INNER JOIN item_view ON consultant.account_id = item_view.item_view_id;
 

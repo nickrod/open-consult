@@ -30,6 +30,10 @@ class Account extends Table
 
   // constants
 
+  public const TABLE = 'account_total';
+
+  //
+
   public const COLUMN = [
     'account_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_blog_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
@@ -41,10 +45,6 @@ class Account extends Table
     'total_gigs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
-
-  //
-
-  public const TABLE = 'account_total';
 
   // getters
 

@@ -89,24 +89,24 @@ class Table implements TableInterface
 
     //
 
-    if (isset($option['key']))
+    if (isset($option['index']))
     {
-      $column_type[] = 'key';
-      $column_value += $option['key'];
+      $column_type[] = 'index';
+      $column_value += $option['index'];
     }
 
     //
 
-    if ($column_value)
+    if ($column_value !== [])
     {
       $column_key = Sanitize::column($column_type, $column, $column_value);
     }
 
     //
 
-    if (isset($column_key['key']))
+    if (isset($column_key['index']))
     {
-      $statement = $pdo->prepare('SELECT ' . static::class::TABLE . '.*' . ' FROM ' . $from . ' WHERE ' . $column_key['key']);
+      $statement = $pdo->prepare('SELECT ' . static::class::TABLE . '.*' . ' FROM ' . $from . ' WHERE ' . $column_key['index'] . ' LIMIT 1');
       $statement->execute($column_value);
 
       //
@@ -132,10 +132,18 @@ class Table implements TableInterface
 
     //
 
-    if (isset($option['key']))
+    if (isset($option['index']))
     {
-      $column_type[] = 'key';
-      $column_value += $option['key'];
+      $column_type[] = 'index';
+      $column_value += $option['index'];
+    }
+
+    //
+
+    if (isset($option['index_not']))
+    {
+      $column_type[] = 'index_not';
+      $column_value += $option['index_not'];
     }
 
     //
@@ -164,25 +172,26 @@ class Table implements TableInterface
 
     //
 
-    if ($column_value)
+    if ($column_value !== [])
     {
       $column_key = Sanitize::column($column_type, $column, $column_value);
     }
 
     //
 
-    $key = $search = $filter = $order_by = '';
-    $key = (isset($column_key['key'])) ? ' AND ' . $column_key['key'] : '';
+    $index = $search = $filter = $filter_from = $order_by = '';
+    $index = (isset($column_key['index'])) ? ' AND ' . $column_key['index'] : '';
     $search = (isset($column_key['search'])) ? ' AND (' . $column_key['search'] . ')' : '';
     $filter = (isset($column_key['filter'])) ? ' AND ' . $column_key['filter'] : '';
+    $filter_from = (isset($column_key['filter_from'])) ? $column_key['filter_from'] : '';
     $order_by = (isset($column_key['order_by'])) ? ' ORDER BY ' . $column_key['order_by'] : '';
     $statement = null;
 
     //
 
-    if ($key || $search || $filter)
+    if ($index !== '' || $search !== '' || $filter !== '')
     {
-      $statement = $pdo->prepare('SELECT ' . static::class::TABLE . '.*' . ' FROM ' . $from . ' WHERE ' . $key . $search . $filter . $order_by . ' LIMIT ' . $limit . ' OFFSET ' . $offset);
+      $statement = $pdo->prepare('SELECT ' . static::class::TABLE . '.*' . ' FROM ' . $from . $filter_from . ' WHERE ' . $index . $search . $filter . $order_by . ' LIMIT ' . $limit . ' OFFSET ' . $offset);
       $statement->execute($column_value);
     }
     else
@@ -193,48 +202,6 @@ class Table implements TableInterface
     //
 
     return $statement->fetchAll(\PDO::FETCH_CLASS, static::class);
-  }
-
-  // save a list of objects
-
-  public static function saveList(array $table): void
-  {
-    foreach ($table as $key => $value)
-    {
-      if (!is_object($value))
-      {
-        throw new \InvalidArgumentException('Object is required: ' . $value);
-      }
-      elseif (!$value instanceof self)
-      {
-        throw new \InvalidArgumentException('Object instance is invalid: ' . get_class($value));
-      }
-      else
-      {
-        $value->save();
-      }
-    }
-  }
-
-  // remove a list of objects
-
-  public static function removeList(array $table): void
-  {
-    foreach ($table as $key => $value)
-    {
-      if (!is_object($value))
-      {
-        throw new \InvalidArgumentException('Object is required: ' . $value);
-      }
-      elseif (!$value instanceof self)
-      {
-        throw new \InvalidArgumentException('Object instance is invalid: ' . get_class($value));
-      }
-      else
-      {
-        $value->remove();
-      }
-    }
   }
 
   // check if item exists
@@ -248,24 +215,24 @@ class Table implements TableInterface
 
     //
 
-    if (isset($option['key']))
+    if (isset($option['index']))
     {
-      $column_type[] = 'key';
-      $column_value += $option['key'];
+      $column_type[] = 'index';
+      $column_value += $option['index'];
     }
 
     //
 
-    if ($column_value)
+    if ($column_value !== [])
     {
       $column_key = Sanitize::column($column_type, $column, $column_value);
     }
 
     //
 
-    if (isset($column_key['key']))
+    if (isset($column_key['index']))
     {
-      $statement = $pdo->prepare('SELECT 1 FROM ' . $from . ' WHERE ' . $column_key['key']);
+      $statement = $pdo->prepare('SELECT 1 FROM ' . $from . ' WHERE ' . $column_key['index'] . ' LIMIT 1');
       $statement->execute($column_value);
 
       //
@@ -289,10 +256,18 @@ class Table implements TableInterface
 
     //
 
-    if (isset($option['key']))
+    if (isset($option['index']))
     {
-      $column_type[] = 'key';
-      $column_value += $option['key'];
+      $column_type[] = 'index';
+      $column_value += $option['index'];
+    }
+
+    //
+
+    if (isset($option['index_not']))
+    {
+      $column_type[] = 'index_not';
+      $column_value += $option['index_not'];
     }
 
     //
@@ -313,22 +288,23 @@ class Table implements TableInterface
 
     //
 
-    if ($column_value)
+    if ($column_value !== [])
     {
       $column_key = Sanitize::column($column_type, $column, $column_value);
     }
 
     //
 
-    if (isset($column_key['key']))
+    if (isset($column_key['index']))
     {
-      $search = $filter = '';
+      $search = $filter = $filter_from = '';
       $search = (isset($column_key['search'])) ? ' AND (' . $column_key['search'] . ')' : '';
       $filter = (isset($column_key['filter'])) ? ' AND ' . $column_key['filter'] : '';
+      $filter_from = (isset($column_key['filter_from'])) ? $column_key['filter_from'] : '';
 
       //
 
-      $statement = $pdo->prepare('SELECT COUNT(*) AS total FROM ' . $from . ' WHERE ' . $column_key['key'] . $search . $filter);
+      $statement = $pdo->prepare('SELECT COUNT(*) AS total FROM ' . $from . $filter_from . ' WHERE ' . $column_key['index'] . $search . $filter);
       $statement->execute($column_value);
 
       //

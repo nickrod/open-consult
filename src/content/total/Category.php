@@ -26,6 +26,10 @@ class Category extends Table
 
   // constants
 
+  public const TABLE = 'category_total';
+
+  //
+
   public const COLUMN = [
     'category_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_blogs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
@@ -33,10 +37,6 @@ class Category extends Table
     'total_gigs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
-
-  //
-
-  public const TABLE = 'category_total';
 
   // getters
 

@@ -31,6 +31,10 @@ class Total extends Table
 
   // constants
 
+  public const TABLE = 'total';
+
+  //
+
   public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_accounts' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false],
@@ -43,10 +47,6 @@ class Total extends Table
     'total_gigs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false],
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false]
   ];
-
-  //
-
-  public const TABLE = 'total';
 
   // getters
 

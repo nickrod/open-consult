@@ -23,14 +23,14 @@ class Blog extends Table
 
   // constants
 
+  public const TABLE = 'blog_category';
+
+  //
+
   public const COLUMN = [
     'blog_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'category_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
-
-  //
-
-  public const TABLE = 'blog_category';
 
   // constructor
 

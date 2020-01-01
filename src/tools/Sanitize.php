@@ -94,7 +94,7 @@ class Sanitize
   public static function column(array &$type, array &$column, array &$column_value): array
   {
     $arr = [];
-    $key_count = $allowed_insert_count = $allowed_edit_count = $search_count = $filter_count = $order_by_count = 0;
+    $key_count = $index_count = $allowed_insert_count = $allowed_edit_count = $search_count = $filter_count = $order_by_count = 0;
 
     //
 
@@ -110,7 +110,7 @@ class Sanitize
         {
           throw new SanitizeException('Column type not found: ' . $type_value);
         }
-        elseif (!$column[$key][$type_value])
+        elseif ($column[$key][$type_value] !== true)
         {
           continue;
         }
@@ -125,6 +125,18 @@ class Sanitize
             $arr[$type_value] .= (($key_count === 0) ? '' : ' AND ') . $key . ' = :' . $key;
             $key_count++;
           }
+          elseif ($type_value === 'index' || $type_value === 'index_not')
+          {
+            if ($type_value === 'index_not' && isset($column_value['index'][$key]))
+            {
+              continue;
+            }
+            else
+            {
+              $arr['index'] .= (($index_count === 0) ? '' : ' AND ') . $key . ' ' . (($type_value === 'index_not') ? '!' : '') . '= :' . $key;
+              $index_count++;
+            }
+          }
           elseif ($type_value === 'allowed')
           {
             if (is_string($value) && trim($value) === '')
@@ -134,7 +146,7 @@ class Sanitize
 
             //
 
-            if (!$column[$key]['key'])
+            if ($column[$key]['key'] !== true)
             {
               $arr[$type_value] .= (($allowed_edit_count === 0) ? '' : ', ') . $key . ' = :' . $key;
               $allowed_edit_count++;
@@ -159,6 +171,13 @@ class Sanitize
           {
             if (is_array($value))
             {
+              if (isset($column[$key]['filter_join']))
+              {
+                $arr['filter_from'] .= ' INNER JOIN ' . $column[$key]['filter_join'] . ' ON ' . $key . ' = ' . $column[$key]['filter_join'] . '.' . key;
+              }
+
+              //
+
               $in_val = self::arrayToInt($value);
               $arr[$type_value] .= (($filter_count === 0) ? '' : ' AND ') . $key . ' IN (' . (($in_val !== '') ? $in_val : '0') . ')';
               $filter_count++;

@@ -27,6 +27,10 @@ class AccountActive extends Table
 
   // constants
 
+  public const TABLE = 'account_active';
+
+  //
+
   public const COLUMN = [
     'account_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'chat_online' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false],
@@ -34,10 +38,6 @@ class AccountActive extends Table
     'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
-
-  //
-
-  public const TABLE = 'account_active';
 
   // constructor
 

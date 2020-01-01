@@ -1,5 +1,15 @@
 -- functions
 
+-- geolocation
+
+CREATE OR REPLACE FUNCTION calc_dist(lat real, lng real, pnt_lat real, pnt_lng real)
+RETURNS real AS
+$BODY$
+BEGIN
+  RETURN 3959 * acos(cos(radians(pnt_lat)) * cos(radians(lat)) * cos(radians(lng) - radians(pnt_lng)) + sin(radians(pnt_lat)) * sin(radians(lat)));
+END;
+$BODY$ LANGUAGE plpgsql;
+
 -- account
 
 CREATE OR REPLACE FUNCTION account()

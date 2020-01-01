@@ -8,17 +8,26 @@ namespace openconsult\content\item;
 
 interface ItemInterface
 {
-  public function addCategory();
-  public function addLocation();
-  public function addCurrency();
-  public function addFavorite();
-  public function removeCategory();
-  public function removeLocation();
-  public function removeCurrency();
-  public function removeFavorite();
+  public function getAccountId();
+  public function getConsultantTitle();
+  public function getConsultantUrl();
+  public function getImageThumb();
+  public function getUsername();
+  public function getChatOnline();
+  public function getSiteOnline();
   public function getCategory();
   public function getLocation();
   public function getCurrency();
   public function getFavorite();
   public function getTotal();
+  public function getRelated();
+  public function getNearby($radius);
+  public function addCategory($category);
+  public function addLocation($location);
+  public function addCurrency($currency);
+  public function addFavorite($favorite);
+  public function removeCategory($category);
+  public function removeLocation($location);
+  public function removeCurrency($currency);
+  public function removeFavorite($favorite);
 }

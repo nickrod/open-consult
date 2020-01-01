@@ -23,14 +23,14 @@ class Gig extends Table
 
   // constants
 
+  public const TABLE = 'gig_total';
+
+  //
+
   public const COLUMN = [
     'gig_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_favorites' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
-
-  //
-
-  public const TABLE = 'gig_total';
 
   // getters
 

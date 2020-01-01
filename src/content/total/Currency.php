@@ -25,16 +25,16 @@ class Currency extends Table
 
   // constants
 
+  public const TABLE = 'currency_total';
+
+  //
+
   public const COLUMN = [
     'currency_id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false],
     'total_consultants' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_gigs' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true],
     'total_services' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true]
   ];
-
-  //
-
-  public const TABLE = 'currency_total';
 
   // getters
 

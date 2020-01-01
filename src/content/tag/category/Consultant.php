@@ -23,14 +23,14 @@ class Consultant extends Table
 
   // constants
 
+  public const TABLE = 'consultant_category';
+
+  //
+
   public const COLUMN = [
     'consultant_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'category_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
-
-  //
-
-  public const TABLE = 'consultant_category';
 
   // constructor
 

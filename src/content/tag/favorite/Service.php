@@ -23,14 +23,14 @@ class Service extends Table
 
   // constants
 
+  public const TABLE = 'service_favorite';
+
+  //
+
   public const COLUMN = [
     'service_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false],
     'account_id' => ['key' => true, 'index' => true, 'allowed' => true, 'order_by' => false]
   ];
-
-  //
-
-  public const TABLE = 'service_favorite';
 
   // constructor
 
