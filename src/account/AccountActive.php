@@ -102,7 +102,10 @@ class AccountActive extends Table
 
   public function setAccountId(int $account_id): void 
   {
-    $this->account_id = $account_id;
+    if ($account_id > 0)
+    {
+      $this->account_id = $account_id;
+    }
   }
 
   //

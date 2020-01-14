@@ -11,6 +11,7 @@ namespace openconsult\content\item;
 //
 
 use openconsult\account\Account;
+use openconsult\tools\Sanitize;
 use openconsult\content\group\Category;
 use openconsult\content\group\Location;
 use openconsult\content\group\Currency;
@@ -30,6 +31,18 @@ class Item extends Table implements ItemInterface
   protected $chat_online;
   protected $site_online;
 
+  //
+
+  public const COLUMN = [
+    'account_id' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false],
+    'consultant_title' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => true, 'max_display' => 200, 'search' => true],
+    'consultant_url' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'max_display' => 100, 'search' => false],
+    'image_thumb' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => false],
+    'username' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => true],
+    'chat_online' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => false],
+    'site_online' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => false]
+  ];
+
   // getters
 
   public function getAccountId(): int
@@ -48,7 +61,7 @@ class Item extends Table implements ItemInterface
 
   public function getConsultantUrl(): string
   {
-    return Sanitize::noHTML(urlencode(Sanitize::length($this->consultant_url, Consultant::COLUMN['title_url']['max_display'])));
+    return Sanitize::noHTML(urlencode(Sanitize::length($this->consultant_url, self::COLUMN['title_url']['max_display'])));
   }
 
   //
@@ -81,11 +94,11 @@ class Item extends Table implements ItemInterface
 
   //
 
-  public function getCategory(): array
+  public function getCategory(int $limit = 10, int $offset = 0): array
   {
     if (isset($this->id) && isset($this::CATEGORY))
     {
-      return Category::getList('index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::CATEGORY::COLUMN, 'from' => 'category INNER JOIN ' . $this::CATEGORY::TABLE . ' ON category.id = ' . $this::CATEGORY::TABLE . '.category_id');
+      return Category::getList(['index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::CATEGORY::COLUMN, 'limit' => $limit, 'offset' => $offset, 'from' => 'category INNER JOIN ' . $this::CATEGORY::TABLE . ' ON category.id = ' . $this::CATEGORY::TABLE . '.category_id']);
     }
     else
     {
@@ -95,11 +108,11 @@ class Item extends Table implements ItemInterface
 
   //
 
-  public function getLocation(): array
+  public function getLocation(int $limit = 10, int $offset = 0): array
   {
     if (isset($this->id) && isset($this::LOCATION))
     {
-      return Location::getList('index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::LOCATION::COLUMN, 'from' => 'location INNER JOIN ' . $this::LOCATION::TABLE . ' ON location.id = ' . $this::LOCATION::TABLE . '.location_id');
+      return Location::getList(['index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::LOCATION::COLUMN, 'limit' => $limit, 'offset' => $offset, 'from' => 'location INNER JOIN ' . $this::LOCATION::TABLE . ' ON location.id = ' . $this::LOCATION::TABLE . '.location_id']);
     }
     else
     {
@@ -109,11 +122,11 @@ class Item extends Table implements ItemInterface
 
   //
 
-  public function getCurrency(): array
+  public function getCurrency(int $limit = 10, int $offset = 0): array
   {
     if (isset($this->id) && isset($this::CURRENCY))
     {
-      return Currency::getList('index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::CURRENCY::COLUMN, 'from' => 'account INNER JOIN ' . $this::CURRENCY::TABLE . ' ON currency.id = ' . $this::CURRENCY::TABLE . '.currency_id');
+      return Currency::getList(['index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::CURRENCY::COLUMN, 'limit' => $limit, 'offset' => $offset, 'from' => 'account INNER JOIN ' . $this::CURRENCY::TABLE . ' ON currency.id = ' . $this::CURRENCY::TABLE . '.currency_id']);
     }
     else
     {
@@ -123,11 +136,11 @@ class Item extends Table implements ItemInterface
 
   //
 
-  public function getFavorite(): array
+  public function getFavorite(int $limit = 10, int $offset = 0): array
   {
     if (isset($this->id) && isset($this::FAVORITE))
     {
-      return Account::getList('index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::FAVORITE::COLUMN, 'from' => 'account INNER JOIN ' . $this::FAVORITE::TABLE . ' ON account.id = ' . $this::FAVORITE::TABLE . '.account_id');
+      return Account::getList(['index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::FAVORITE::COLUMN, 'limit' => $limit, 'offset' => $offset, 'from' => 'account INNER JOIN ' . $this::FAVORITE::TABLE . ' ON account.id = ' . $this::FAVORITE::TABLE . '.account_id']);
     }
     else
     {
@@ -141,7 +154,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::TOTAL))
     {
-      return $this::TOTAL::getObject('index' => [$this::TABLE . '_id' => $this->id]);
+      return $this::TOTAL::getObject(['index' => [$this::TABLE . '_id' => $this->id]]);
     }
     else
     {
@@ -151,11 +164,11 @@ class Item extends Table implements ItemInterface
 
   //
 
-  public function getRelated(): array
+  public function getRelated(int $limit = 5, int $offset = 0): array
   {
     if (isset($this->id) && isset($this::CATEGORY))
     {
-      return $this::getList('index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::CATEGORY::COLUMN, 'from' => $this::TABLE . ' INNER JOIN ' . $this::CATEGORY::TABLE . ' ON ' . $this::TABLE . '.id = ' . $this::CATEGORY::TABLE . '.' . $this::TABLE . '_id');
+      return $this::getList(['order_by' => ['related_count' => 'DESC'], 'limit' => $limit, 'offset' => $offset, 'from' => $this::TABLE . ' INNER JOIN (SELECT COUNT(' . $this::CATEGORY::TABLE . '.' . $this::TABLE . '_id) AS related_count, ' . $this::CATEGORY::TABLE . '.' . $this::TABLE . '_id FROM ' . $this::CATEGORY::TABLE . ' related INNER JOIN ' . $this::CATEGORY::TABLE . ' related_inner ON related.category_id = related_inner.category_id AND related.' . $this::TABLE . '_id != related_inner.' . $this::TABLE . '_id WHERE related_inner.' . $this::TABLE . '_id = ' . $this->getId() . ' GROUP BY related.' . $this::TABLE . '_id ORDER BY related_count DESC) related_outer ON ' . $this::TABLE . '.id = related_outer.' . $this::TABLE . '_id']);
     }
     else
     {
@@ -165,11 +178,11 @@ class Item extends Table implements ItemInterface
 
   //
 
-  public function getNearby(int $radius = 30): array
+  public function getNearby(int $limit = 5, int $offset = 0, int $radius = 100): array
   {
     if (isset($this->id) && isset($this::LOCATION))
     {
-      return $this::getList('index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::LOCATION::COLUMN, 'from' => ' INNER JOIN (SELECT id, calc_dist() AS distance FROM city HAVING distance < 30 ORDER BY distance) AS match ON ');
+      return $this::getList(['index' => [$this::TABLE . '_id' => $this->id], 'column' => $this::LOCATION::COLUMN, 'from' => ' INNER JOIN (SELECT id, calc_dist() AS distance FROM city HAVING distance < ' . $radius . ' ORDER BY distance) AS match ON ']);
     }
     else
     {
@@ -183,7 +196,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::CATEGORY))
     {
-      foreach ($category as $category_id)
+      foreach (array_unique($category) as $category_id)
       {
         if (is_string($category_id))
         {
@@ -201,7 +214,7 @@ class Item extends Table implements ItemInterface
 
         //
 
-        if (isset($category_id) && $category_id > 0)
+        if (isset($category_id))
         {
           (new $this::CATEGORY::TABLE([$this::TABLE . '_id' => $this->id, 'category_id' => $category_id]))->save();
         }
@@ -215,7 +228,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::LOCATION))
     {
-      foreach ($location as $location_id)
+      foreach (array_unique($location) as $location_id)
       {
         (new $this::LOCATION::TABLE([$this::TABLE . '_id' => $this->id, 'location_id' => $location_id]))->save();
       }
@@ -228,7 +241,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::CURRENCY))
     {
-      foreach ($currency as $currency_id)
+      foreach (array_unique($currency) as $currency_id)
       {
         (new $this::CURRENCY::TABLE([$this::TABLE . '_id' => $this->id, 'currency_id' => $currency_id]))->save();
       }
@@ -241,7 +254,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::FAVORITE))
     {
-      foreach ($favorite as $account_id)
+      foreach (array_unique($favorite) as $account_id)
       {
         (new $this::FAVORITE::TABLE([$this::TABLE . '_id' => $this->id, 'account_id' => $account_id]))->save();
       }
@@ -254,7 +267,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::CATEGORY))
     {
-      foreach ($category as $category_id)
+      foreach (array_unique($category) as $category_id)
       {
         (new $this::CATEGORY::TABLE([$this::TABLE . '_id' => $this->id, 'category_id' => $category_id]))->remove();
       }
@@ -267,7 +280,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::LOCATION))
     {
-      foreach ($location as $location_id)
+      foreach (array_unique($location) as $location_id)
       {
         (new $this::LOCATION::TABLE([$this::TABLE . '_id' => $this->id, 'location_id' => $location_id]))->remove();
       }
@@ -280,7 +293,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::CURRENCY))
     {
-      foreach ($currency as $currency_id)
+      foreach (array_unique($currency) as $currency_id)
       {
         (new $this::CURRENCY::TABLE([$this::TABLE . '_id' => $this->id, 'currency_id' => $currency_id]))->remove();
       }
@@ -293,7 +306,7 @@ class Item extends Table implements ItemInterface
   {
     if (isset($this->id) && isset($this::FAVORITE))
     {
-      foreach ($favorite as $account_id)
+      foreach (array_unique($favorite) as $account_id)
       {
         (new $this::FAVORITE::TABLE([$this::TABLE . '_id' => $this->id, 'account_id' => $account_id]))->remove();
       }

@@ -183,14 +183,17 @@ class Account extends Table
 
   public function setId(int $id): void 
   {
-    $this->id = $id;
+    if ($id > 0)
+    {
+      $this->id = $id;
+    }
   }
 
   //
 
   public function setEmail(string $email): void 
   {
-    if (Validate::strLength($email, ['min' => self::COLUMN['email']['min_length'], 'max' => self::COLUMN['email']['max_length']]))
+    if (Validate::strLength($email, self::COLUMN['email']['min_length'], self::COLUMN['email']['max_length']))
     {
       if (!filter_var($email, FILTER_VALIDATE_EMAIL))
       {
@@ -207,7 +210,7 @@ class Account extends Table
 
   public function setNickname(string $nickname): void 
   {
-    if (Validate::strLength($nickname, ['min' => self::COLUMN['nickname']['min_length'], 'max' => self::COLUMN['nickname']['max_length']]))
+    if (Validate::strLength($nickname, self::COLUMN['nickname']['min_length'], self::COLUMN['nickname']['max_length']))
     {
       $this->nickname = $nickname;
     }
@@ -217,7 +220,7 @@ class Account extends Table
 
   public function setUsername(string $username): void 
   {
-    if (Validate::strLength($username, ['min' => self::COLUMN['username']['min_length'], 'max' => self::COLUMN['username']['max_length']]))
+    if (Validate::strLength($username, self::COLUMN['username']['min_length'], self::COLUMN['username']['max_length']))
     {
       $this->username = Sanitize::slugify($username);
     }
@@ -227,7 +230,7 @@ class Account extends Table
 
   public function setPassword(string $password): void 
   {
-    if (Validate::strLength($password, ['min' => self::COLUMN['password']['min_length'], 'max' => self::COLUMN['password']['max_length']]))
+    if (Validate::strLength($password, self::COLUMN['password']['min_length'], self::COLUMN['password']['max_length']))
     {
       $this->password = $password;
     }
@@ -237,7 +240,7 @@ class Account extends Table
 
   public function setPubkey(string $pubkey): void 
   {
-    if (Validate::strLength($pubkey, ['min' => self::COLUMN['pubkey']['min_length']]))
+    if (Validate::strLength($pubkey, self::COLUMN['pubkey']['min_length']))
     {
       $this->pubkey = $pubkey;
     }

@@ -256,14 +256,17 @@ class Currency extends Table
 
   public function setId(int $id): void 
   {
-    $this->id = $id;
+    if ($id > 0)
+    {
+      $this->id = $id;
+    }
   }
 
   //
 
   public function setCode(string $code): void 
   {
-    if (Validate::strLength($code, ['min' => self::COLUMN['code']['min_length'], 'max' => self::COLUMN['code']['max_length']]))
+    if (Validate::strLength($code, self::COLUMN['code']['min_length'], self::COLUMN['code']['max_length']))
     {
       $this->code = $code;
     }
@@ -273,7 +276,7 @@ class Currency extends Table
 
   public function setTitle(string $title): void 
   {
-    if (Validate::strLength($title, ['min' => self::COLUMN['title']['min_length'], 'max' => self::COLUMN['title']['max_length']]))
+    if (Validate::strLength($title, self::COLUMN['title']['min_length'], self::COLUMN['title']['max_length']))
     {
       $this->title = $title;
       $this->setTitleUrl($title);
@@ -284,7 +287,7 @@ class Currency extends Table
 
   private function setTitleUrl(string $title_url): void 
   {
-    if (Validate::strLength($title_url, ['min' => self::COLUMN['title_url']['min_length'], 'max' => self::COLUMN['title_url']['max_length']]))
+    if (Validate::strLength($title_url, self::COLUMN['title_url']['min_length'], self::COLUMN['title_url']['max_length']))
     {
       $this->title_url = Sanitize::slugify($title_url);
     }
@@ -294,7 +297,7 @@ class Currency extends Table
 
   private function setTitleUnit(string $title_unit): void 
   {
-    if (Validate::strLength($title_unit, ['min' => self::COLUMN['title_unit']['min_length'], 'max' => self::COLUMN['title_unit']['max_length']]))
+    if (Validate::strLength($title_unit, self::COLUMN['title_unit']['min_length'], self::COLUMN['title_unit']['max_length']))
     {
       $this->title_unit = $title_unit;
     }
@@ -304,7 +307,7 @@ class Currency extends Table
 
   public function setPageTitle(string $page_title): void 
   {
-    if (Validate::strLength($page_title, ['min' => self::COLUMN['page_title']['min_length'], 'max' => self::COLUMN['page_title']['max_length']]))
+    if (Validate::strLength($page_title, self::COLUMN['page_title']['min_length'], self::COLUMN['page_title']['max_length']))
     {
       $this->page_title = $page_title;
     }
@@ -314,7 +317,7 @@ class Currency extends Table
 
   public function setPageDescription(string $page_description): void 
   {
-    if (Validate::strLength($page_description, ['min' => self::COLUMN['page_description']['min_length'], 'max' => self::COLUMN['page_description']['max_length']]))
+    if (Validate::strLength($page_description, self::COLUMN['page_description']['min_length'], self::COLUMN['page_description']['max_length']))
     {
       $this->page_description = $page_description;
     }
@@ -324,7 +327,7 @@ class Currency extends Table
 
   public function setPageHeader(string $page_header): void 
   {
-    if (Validate::strLength($page_header, ['min' => self::COLUMN['page_header']['min_length'], 'max' => self::COLUMN['page_header']['max_length']]))
+    if (Validate::strLength($page_header, self::COLUMN['page_header']['min_length'], self::COLUMN['page_header']['max_length']))
     {
       $this->page_header = $page_header;
     }
@@ -348,7 +351,7 @@ class Currency extends Table
 
   public function setSymbol(string $symbol): void 
   {
-    if (Validate::strLength($symbol, ['min' => self::COLUMN['symbol']['min_length'], 'max' => self::COLUMN['symbol']['max_length']]))
+    if (Validate::strLength($symbol, self::COLUMN['symbol']['min_length'], self::COLUMN['symbol']['max_length']))
     {
       $this->symbol = $symbol;
     }
@@ -358,7 +361,7 @@ class Currency extends Table
 
   public function setSymbolUnit(string $symbol_unit): void 
   {
-    if (Validate::strLength($symbol_unit, ['min' => self::COLUMN['symbol_unit']['min_length'], 'max' => self::COLUMN['symbol_unit']['max_length']]))
+    if (Validate::strLength($symbol_unit, self::COLUMN['symbol_unit']['min_length'], self::COLUMN['symbol_unit']['max_length']))
     {
       $this->symbol_unit = $symbol_unit;
     }
@@ -368,7 +371,7 @@ class Currency extends Table
 
   public function setMultiplierUnit(int $multiplier_unit): void 
   {
-    if (Validate::intLength($multiplier_unit, ['min' => self::COLUMN['multiplier_unit']['min_length'], 'max' => self::COLUMN['multiplier_unit']['max_length']]))
+    if (Validate::intLength($multiplier_unit, self::COLUMN['multiplier_unit']['min_length'], self::COLUMN['multiplier_unit']['max_length']))
     {
       $this->multiplier_unit = $multiplier_unit;
     }

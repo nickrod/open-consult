@@ -21,7 +21,7 @@ class Config extends Singleton
 {
   // pdo connection
 
-  protected $pdo;
+  private $pdo;
 
   // pdo options
 

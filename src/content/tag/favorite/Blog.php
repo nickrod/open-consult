@@ -67,13 +67,19 @@ class Blog extends Table
 
   public function setBlogId(int $blog_id): void 
   {
-    $this->blog_id = $blog_id;
+    if ($blog_id > 0)
+    {
+      $this->blog_id = $blog_id;
+    }
   }
 
   //
 
   public function setAccountId(int $account_id): void 
   {
-    $this->account_id = $account_id;
+    if ($account_id > 0)
+    {
+      $this->account_id = $account_id;
+    }
   }
 }

@@ -160,14 +160,17 @@ class Category extends Table
 
   public function setId(int $id): void 
   {
-    $this->id = $id;
+    if ($id > 0)
+    {
+      $this->id = $id;
+    }
   }
 
   //
 
   public function setTitle(string $title): void 
   {
-    if (Validate::strLength($title, ['min' => self::COLUMN['title']['min_length'], 'max' => self::COLUMN['title']['max_length']]))
+    if (Validate::strLength($title, self::COLUMN['title']['min_length'], self::COLUMN['title']['max_length']))
     {
       $this->title = $title;
       $this->setTitleUrl($title);
@@ -178,7 +181,7 @@ class Category extends Table
 
   private function setTitleUrl(string $title_url): void 
   {
-    if (Validate::strLength($title_url, ['min' => self::COLUMN['title_url']['min_length'], 'max' => self::COLUMN['title_url']['max_length']]))
+    if (Validate::strLength($title_url, self::COLUMN['title_url']['min_length'], self::COLUMN['title_url']['max_length']))
     {
       $this->title_url = Sanitize::slugify($title_url);
     }
@@ -188,7 +191,7 @@ class Category extends Table
 
   public function setPageTitle(string $page_title): void 
   {
-    if (Validate::strLength($page_title, ['min' => self::COLUMN['page_title']['min_length'], 'max' => self::COLUMN['page_title']['max_length']]))
+    if (Validate::strLength($page_title, self::COLUMN['page_title']['min_length'], self::COLUMN['page_title']['max_length']))
     {
       $this->page_title = $page_title;
     }
@@ -198,7 +201,7 @@ class Category extends Table
 
   public function setPageDescription(string $page_description): void 
   {
-    if (Validate::strLength($page_description, ['min' => self::COLUMN['page_description']['min_length'], 'max' => self::COLUMN['page_description']['max_length']]))
+    if (Validate::strLength($page_description, self::COLUMN['page_description']['min_length'], self::COLUMN['page_description']['max_length']))
     {
       $this->page_description = $page_description;
     }
@@ -208,7 +211,7 @@ class Category extends Table
 
   public function setPageHeader(string $page_header): void 
   {
-    if (Validate::strLength($page_header, ['min' => self::COLUMN['page_header']['min_length'], 'max' => self::COLUMN['page_header']['max_length']]))
+    if (Validate::strLength($page_header, self::COLUMN['page_header']['min_length'], self::COLUMN['page_header']['max_length']))
     {
       $this->page_header = $page_header;
     }

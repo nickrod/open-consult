@@ -167,14 +167,17 @@ class AccountAuth extends Table
 
   public function setId(int $id): void 
   {
-    $this->id = $id;
+    if ($id > 0)
+    {
+      $this->id = $id;
+    }
   }
 
   //
 
   public function setSelector(string $selector): void 
   {
-    if (Validate::strLength($selector, ['min' => self::COLUMN['selector']['min_length'], 'max' => self::COLUMN['selector']['max_length']]))
+    if (Validate::strLength($selector, self::COLUMN['selector']['min_length'], self::COLUMN['selector']['max_length']))
     {
       $this->selector = $selector;
     }
@@ -184,7 +187,7 @@ class AccountAuth extends Table
 
   public function setHashedValidator(string $hashed_validator): void 
   {
-    if (Validate::strLength($hashed_validator, ['min' => self::COLUMN['hashed_validator']['min_length']]))
+    if (Validate::strLength($hashed_validator, self::COLUMN['hashed_validator']['min_length']))
     {
       $this->hashed_validator = $hashed_validator;
     }
@@ -194,7 +197,10 @@ class AccountAuth extends Table
 
   public function setAccountId(int $account_id): void 
   {
-    $this->account_id = $account_id;
+    if ($account_id > 0)
+    {
+      $this->account_id = $account_id;
+    }
   }
 
   //

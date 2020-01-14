@@ -20,8 +20,8 @@ interface ItemInterface
   public function getCurrency();
   public function getFavorite();
   public function getTotal();
-  public function getRelated();
-  public function getNearby($radius);
+  public function getRelated($limit, $offset);
+  public function getNearby($limit, $offset, $radius);
   public function addCategory($category);
   public function addLocation($location);
   public function addCurrency($currency);

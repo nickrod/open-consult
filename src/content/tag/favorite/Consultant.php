@@ -67,13 +67,19 @@ class Consultant extends Table
 
   public function setConsultantId(int $consultant_id): void 
   {
-    $this->consultant_id = $consultant_id;
+    if ($consultant_id > 0)
+    {
+      $this->consultant_id = $consultant_id;
+    }
   }
 
   //
 
   public function setAccountId(int $account_id): void 
   {
-    $this->account_id = $account_id;
+    if ($account_id > 0)
+    {
+      $this->account_id = $account_id;
+    }
   }
 }

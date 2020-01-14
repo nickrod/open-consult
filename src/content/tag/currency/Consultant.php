@@ -67,13 +67,19 @@ class Consultant extends Table
 
   public function setConsultantId(int $consultant_id): void 
   {
-    $this->consultant_id = $consultant_id;
+    if ($consultant_id > 0)
+    {
+      $this->consultant_id = $consultant_id;
+    }
   }
 
   //
 
   public function setCurrencyId(int $currency_id): void 
   {
-    $this->currency_id = $currency_id;
+    if ($currency_id > 0)
+    {
+      $this->currency_id = $currency_id;
+    }
   }
 }

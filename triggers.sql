@@ -2,8 +2,8 @@
 
 -- geolocation
 
-CREATE OR REPLACE FUNCTION calc_dist(lat real, lng real, pnt_lat real, pnt_lng real)
-RETURNS real AS
+CREATE OR REPLACE FUNCTION calc_dist(lat float, lng float, pnt_lat float, pnt_lng float)
+RETURNS float AS
 $BODY$
 BEGIN
   RETURN 3959 * acos(cos(radians(pnt_lat)) * cos(radians(lat)) * cos(radians(lng) - radians(pnt_lng)) + sin(radians(pnt_lat)) * sin(radians(lat)));

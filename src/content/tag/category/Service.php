@@ -67,13 +67,19 @@ class Service extends Table
 
   public function setServiceId(int $service_id): void 
   {
-    $this->service_id = $service_id;
+    if ($service_id > 0)
+    {
+      $this->service_id = $service_id;
+    }
   }
 
   //
 
   public function setCategoryId(int $category_id): void 
   {
-    $this->category_id = $category_id;
+    if ($category_id > 0)
+    {
+      $this->category_id = $category_id;
+    }
   }
 }

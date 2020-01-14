@@ -67,13 +67,19 @@ class Gig extends Table
 
   public function setGigId(int $gig_id): void 
   {
-    $this->gig_id = $gig_id;
+    if ($gig_id > 0)
+    {
+      $this->gig_id = $gig_id;
+    }
   }
 
   //
 
   public function setCategoryId(int $category_id): void 
   {
-    $this->category_id = $category_id;
+    if ($category_id > 0)
+    {
+      $this->category_id = $category_id;
+    }
   }
 }

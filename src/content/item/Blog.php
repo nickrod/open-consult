@@ -10,6 +10,7 @@ namespace openconsult\content\item;
 
 //
 
+use openconsult\config\Config;
 use openconsult\tools\Validate;
 use openconsult\tools\Sanitize;
 use openconsult\account\Account;
@@ -45,9 +46,9 @@ class Blog extends Item
 
   public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => false],
-    'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => true, 'min_length' => 2, 'max_length' => 200, 'search' => true],
+    'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'search' => true],
     'title_short' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 100, 'search' => false],
-    'title_url' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'search' => false],
+    'title_url' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'max_display' => 80, 'search' => false],
     'description' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => true],
     'description_short' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'canonical_url' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
@@ -56,7 +57,8 @@ class Blog extends Item
     'featured' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'search' => false],
     'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false],
     'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false],
-    'category_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true, 'filter_join' => self::CATEGORY::TABLE]
+    'category_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true, 'filter_join' => self::CATEGORY::TABLE],
+    'related_count' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false]
   ];
 
   // constructor
@@ -94,13 +96,6 @@ class Blog extends Item
     if (isset($column['description_short']))
     {
       $this->setDescriptionShort($column['description_short']);
-    }
-
-    //
-
-    if (isset($column['canonical_url']))
-    {
-      $this->setCanonicalUrl($column['canonical_url']);
     }
 
     //
@@ -143,14 +138,14 @@ class Blog extends Item
 
   public function getTitleShort(): string 
   {
-    return Sanitize::noHTML($this->title_short);
+    return Sanitize::noHTML(Sanitize::length($this->title_short, self::COLUMN['title_short']['max_display']));
   }
 
   //
 
   public function getTitleUrl(): string 
   {
-    return filter_var($this->title_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    return Sanitize::noHTML(urlencode(Sanitize::length($this->title_url, self::COLUMN['title_url']['max_display'])));
   }
 
   //
@@ -164,14 +159,14 @@ class Blog extends Item
 
   public function getDescriptionShort(): string 
   {
-    return Sanitize::noHTML($this->description_short);
+    return Sanitize::noHTML(Sanitize::length($this->description_short, self::COLUMN['description_short']['max_display']));
   }
 
   //
 
   public function getCanonicalUrl(): string 
   {
-    return $this->canonical_url;
+    return Sanitize::noHTML($this->canonical_url);
   }
 
   //
@@ -206,41 +201,63 @@ class Blog extends Item
 
   public function setId(int $id): void 
   {
-    $this->id = $id;
+    if ($id > 0)
+    {
+      $this->id = $id;
+    }
   }
 
   //
 
   public function setTitle(string $title): void 
   {
-    if (Validate::validateEmail($email))
+    if (Validate::strLength($title, ['min' => self::COLUMN['title']['min_length'], 'max' => self::COLUMN['title']['max_length']]))
     {
       $this->title = $title;
+      $this->setTitleUrl($title);
     }
   }
 
   //
 
-  public function setDescription($description) 
+  private function setTitleUrl(string $title_url): void 
   {
-    if (Validate::validatePassword($password))
+    if (Validate::strLength($title_url, ['min' => self::COLUMN['title_url']['min_length'], 'max' => self::COLUMN['title_url']['max_length']]))
     {
-      $this->description = $description;
+      $this->title_url = Sanitize::slugify($title_url);
+
+      //
+
+      if (isset($this->id))
+      {
+        $this->setCanonicalUrl(Config::getInstance()->getSiteUrl() . 'blog/' . $this->id . '/' . $title_url);
+      }
     }
   }
 
   //
 
-  public function setDescriptionShort($description_short) 
+  public function setDescription(string $description): void 
+  {
+    $this->description = $description;
+  }
+
+  //
+
+  public function setDescriptionShort(string $description_short): void 
   {
     $this->description_short = $description_short;
   }
 
   //
 
-  public function setCanonicalUrl($canonical_url) 
+  private function setCanonicalUrl(string $canonical_url): void 
   {
-    if (Validate::validateBoolean($enabled))
+    if (!filter_var($canonical_url, FILTER_VALIDATE_URL))
+    {
+      throw new \InvalidArgumentException('Canonical url is invalid: ' . $canonical_url);
+    }
+    else
     {
       $this->canonical_url = $canonical_url;
     }
@@ -248,9 +265,19 @@ class Blog extends Item
 
   //
 
+  public function setImage(string $image): void 
+  {
+    $this->image = $image;
+  }
+
+  //
+
   public function setConsultantId(int $consultant_id): void 
   {
-    $this->consultant_id = $consultant_id;
+    if ($consultant_id > 0)
+    {
+      $this->consultant_id = $consultant_id;
+    }
   }
 
   //
