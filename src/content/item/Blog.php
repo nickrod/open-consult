@@ -13,8 +13,6 @@ namespace openconsult\content\item;
 use openconsult\config\Config;
 use openconsult\tools\Validate;
 use openconsult\tools\Sanitize;
-use openconsult\account\Account;
-use openconsult\content\group\Category;
 
 //
 
@@ -47,10 +45,10 @@ class Blog extends Item
   public const COLUMN = [
     'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => false],
     'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'search' => true],
-    'title_short' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 100, 'search' => false],
+    'title_short' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 100, 'max_display' => 80, 'search' => true],
     'title_url' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'max_display' => 80, 'search' => false],
-    'description' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => true],
-    'description_short' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
+    'description' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 100, 'search' => true],
+    'description_short' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 10, 'max_length' => 200, 'search' => true],
     'canonical_url' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'image' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
     'consultant_id' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'search' => false],
@@ -214,7 +212,24 @@ class Blog extends Item
     if (Validate::strLength($title, ['min' => self::COLUMN['title']['min_length'], 'max' => self::COLUMN['title']['max_length']]))
     {
       $this->title = $title;
-      $this->setTitleUrl($title);
+
+      //
+
+      if (!isset($this->title_short))
+      {
+        $this->setTitleUrl($title);
+      }
+    }
+  }
+
+  //
+
+  public function setTitleShort(string $title_short): void 
+  {
+    if (Validate::strLength($title_short, ['min' => self::COLUMN['title_short']['min_length'], 'max' => self::COLUMN['title_short']['max_length']]))
+    {
+      $this->title_short = $title_short;
+      $this->setTitleUrl($title_short);
     }
   }
 
@@ -230,7 +245,7 @@ class Blog extends Item
 
       if (isset($this->id))
       {
-        $this->setCanonicalUrl(Config::getInstance()->getSiteUrl() . 'blog/' . $this->id . '/' . $title_url);
+        $this->setCanonicalUrl(Config::getInstance()->getSiteUrl() . self::TABLE . '/' . $this->id . '/' . $this->title_url);
       }
     }
   }
@@ -239,14 +254,20 @@ class Blog extends Item
 
   public function setDescription(string $description): void 
   {
-    $this->description = $description;
+    if (Validate::strLength($description, ['min' => self::COLUMN['description']['min_length']]))
+    {
+      $this->description = $description;
+    }
   }
 
   //
 
   public function setDescriptionShort(string $description_short): void 
   {
-    $this->description_short = $description_short;
+    if (Validate::strLength($description_short, ['min' => self::COLUMN['description_short']['min_length'], 'max' => self::COLUMN['description_short']['max_length']]))
+    {
+      $this->description_short = $description_short;
+    }
   }
 
   //

@@ -169,12 +169,12 @@ CREATE TABLE currency (
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(code),
+  UNIQUE(title),
   UNIQUE(title_url)
 );
 
 --
 
-CREATE INDEX idx_currency_title ON currency(title);
 CREATE INDEX idx_currency_title_unit ON currency(title_unit);
 CREATE INDEX idx_currency_featured ON currency(featured);
 CREATE INDEX idx_currency_crypto ON currency(crypto);
@@ -256,12 +256,12 @@ CREATE TABLE location (
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(geoname_id),
+  UNIQUE(title),
   UNIQUE(title_url)
 );
 
 --
 
-CREATE INDEX idx_location_title ON location(title);
 CREATE INDEX idx_location_featured ON location(featured);
 CREATE INDEX idx_location_created_date ON location(created_date);
 CREATE INDEX idx_location_updated_date ON location(updated_date);
@@ -275,6 +275,7 @@ CREATE TABLE consultant (
   title_url TEXT NOT NULL CHECK(TRIM(title_url) <> ''),
   description TEXT NOT NULL CHECK(TRIM(description) <> ''),
   description_short TEXT CHECK(TRIM(description_short) <> ''),
+  canonical_url TEXT NOT NULL CHECK(TRIM(canonical_url) <> ''),
   website_url TEXT CHECK(TRIM(website_url) <> ''),
   calendar_url TEXT CHECK(TRIM(calendar_url) <> ''),
   image TEXT CHECK(TRIM(image) <> ''),
@@ -284,12 +285,14 @@ CREATE TABLE consultant (
   account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
   featured BOOL NOT NULL DEFAULT FALSE,
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(title),
+  UNIQUE(title_url),
+  UNIQUE(canonical_url)
 );
 
 --
 
-CREATE INDEX idx_consultant_title ON consultant(title);
 CREATE INDEX idx_consultant_rate ON consultant(rate);
 CREATE INDEX idx_consultant_base_currency_id ON consultant(base_currency_id);
 CREATE INDEX idx_consultant_account_id ON consultant(account_id);
@@ -311,12 +314,14 @@ CREATE TABLE blog (
   consultant_id INT NOT NULL REFERENCES consultant(id) ON DELETE CASCADE,
   featured BOOL NOT NULL DEFAULT FALSE,
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(title),
+  UNIQUE(title_url),
+  UNIQUE(canonical_url)
 );
 
 --
 
-CREATE INDEX idx_blog_title ON blog(title);
 CREATE INDEX idx_blog_consultant_id ON blog(consultant_id);
 CREATE INDEX idx_blog_featured ON blog(featured);
 CREATE INDEX idx_blog_created_date ON blog(created_date);
@@ -338,12 +343,14 @@ CREATE TABLE gig (
   consultant_id INT NOT NULL REFERENCES consultant(id) ON DELETE CASCADE,
   featured BOOL NOT NULL DEFAULT FALSE,
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(title),
+  UNIQUE(title_url),
+  UNIQUE(canonical_url)
 );
 
 --
 
-CREATE INDEX idx_gig_title ON gig(title);
 CREATE INDEX idx_gig_salary ON gig(salary);
 CREATE INDEX idx_gig_base_currency_id ON gig(base_currency_id);
 CREATE INDEX idx_gig_consultant_id ON gig(consultant_id);
@@ -367,12 +374,14 @@ CREATE TABLE service (
   consultant_id INT NOT NULL REFERENCES consultant(id) ON DELETE CASCADE,
   featured BOOL NOT NULL DEFAULT FALSE,
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  updated_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(title),
+  UNIQUE(title_url),
+  UNIQUE(canonical_url)
 );
 
 --
 
-CREATE INDEX idx_service_title ON service(title);
 CREATE INDEX idx_service_price ON service(price);
 CREATE INDEX idx_service_base_currency_id ON service(base_currency_id);
 CREATE INDEX idx_service_consultant_id ON service(consultant_id);
@@ -385,6 +394,7 @@ CREATE INDEX idx_service_updated_date ON service(updated_date);
 CREATE TABLE consultant_currency (
   consultant_id INT NOT NULL REFERENCES consultant(id) ON DELETE CASCADE,
   currency_id INT NOT NULL REFERENCES currency(id) ON DELETE CASCADE,
+  address TEXT CHECK(TRIM(address) <> ''),
   PRIMARY KEY(consultant_id, currency_id)
 );
 

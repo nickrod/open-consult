@@ -2,35 +2,299 @@
 
 //
 
+declare(strict_types=1);
+
+//
+
 namespace openconsult\content\item;
 
 //
 
+use openconsult\config\Config;
 use openconsult\tools\Validate;
 use openconsult\tools\Sanitize;
-use openconsult\account\user\User;
-use openconsult\content\group\Category;
-use openconsult\content\group\Location;
-use openconsult\content\group\Currency;
-use openconsult\content\tag\category\Consultant as ConsultantCategory;
-use openconsult\content\tag\location\Consultant as ConsultantLocation;
-use openconsult\content\tag\currency\Consultant as ConsultantCurrency;
-use openconsult\content\tag\favorite\Consultant as ConsultantFavorite;
-use openconsult\content\total\Consultant as ConsultantTotal;
 
 //
 
 class Consultant extends Item
 {
-  public function getLocation()
+  // variables
+
+  protected $id;
+  protected $title;
+  protected $title_short;
+  protected $title_url;
+  protected $description;
+  protected $description_short;
+  protected $canonical_url;
+  protected $website_url;
+  protected $calendar_url;
+  protected $image;
+  protected $rate;
+  protected $base_currency_id;
+  protected $featured;
+  protected $created_date;
+  protected $updated_date;
+
+  // constants
+
+  public const TABLE = 'consultant';
+  public const CATEGORY = 'openconsult\content\tag\category\Consultant';
+  public const LOCATION = 'openconsult\content\tag\location\Consultant';
+  public const CURRENCY = 'openconsult\content\tag\currency\Consultant';
+  public const FAVORITE = 'openconsult\content\tag\favorite\Consultant';
+  public const TOTAL = 'openconsult\content\total\Consultant';
+
+  //
+
+  public const COLUMN = [
+    'id' => ['key' => true, 'index' => true, 'allowed' => false, 'order_by' => false, 'search' => false],
+    'title' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'search' => true],
+    'title_short' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'min_length' => 2, 'max_length' => 100, 'max_display' => 80, 'search' => true],
+    'title_url' => ['key' => false, 'index' => true, 'allowed' => false, 'order_by' => false, 'min_length' => 2, 'max_length' => 200, 'max_display' => 80, 'search' => false],
+    'description' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 100, 'search' => true],
+    'description_short' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'min_length' => 10, 'max_length' => 200, 'search' => true],
+    'canonical_url' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
+    'image' => ['key' => false, 'index' => false, 'allowed' => true, 'order_by' => false, 'search' => false],
+    'consultant_id' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'search' => false],
+    'featured' => ['key' => false, 'index' => true, 'allowed' => true, 'order_by' => false, 'search' => false],
+    'created_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false],
+    'updated_date' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false],
+    'category_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true, 'filter_join' => self::CATEGORY::TABLE],
+    'location_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true, 'filter_join' => self::LOCATION::TABLE],
+    'currency_id' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => false, 'search' => false, 'filter' => true, 'filter_join' => self::CURRENCY::TABLE],
+    'related_count' => ['key' => false, 'index' => false, 'allowed' => false, 'order_by' => true, 'search' => false]
+  ];
+
+  // constructor
+
+  public function __construct(array $column = [])
   {
-    return Location::getList(["consultant_id" => $this->id], ConsultantLocation::$column, "location INNER JOIN consultant_location ON location.id = consultant_location.location_id");
+    if (isset($column['id']))
+    {
+      $this->setId($column['id']);
+    }
+
+    //
+
+    if (isset($column['title']))
+    {
+      $this->setTitle($column['title']);
+    }
+
+    //
+
+    if (isset($column['title_short']))
+    {
+      $this->setTitleShort($column['title_short']);
+    }
+
+    //
+
+    if (isset($column['description']))
+    {
+      $this->setDescription($column['description']);
+    }
+
+    //
+
+    if (isset($column['description_short']))
+    {
+      $this->setDescriptionShort($column['description_short']);
+    }
+
+    //
+
+    if (isset($column['image']))
+    {
+      $this->setImage($column['image']);
+    }
+
+    //
+
+    if (isset($column['consultant_id']))
+    {
+      $this->setConsultantId($column['consultant_id']);
+    }
+
+    //
+
+    if (isset($column['featured']))
+    {
+      $this->setFeatured($column['featured']);
+    }
+  }
+
+  // getters
+
+  public function getId(): int 
+  {
+    return $this->id;
   }
 
   //
 
-  public function getCurrency()
+  public function getTitle(): string 
   {
-    return Currency::getList(["consultant_id" => $this->id], ConsultantCurrency::$column, "currency INNER JOIN consultant_currency ON currency.id = consultant_currency.currency_id");
+    return Sanitize::noHTML($this->title);
+  }
+
+  //
+
+  public function getTitleShort(): string 
+  {
+    return Sanitize::noHTML(Sanitize::length($this->title_short, self::COLUMN['title_short']['max_display']));
+  }
+
+  //
+
+  public function getTitleUrl(): string 
+  {
+    return Sanitize::noHTML(urlencode(Sanitize::length($this->title_url, self::COLUMN['title_url']['max_display'])));
+  }
+
+  //
+
+  public function getDescription(): string 
+  {
+    return Sanitize::noHTML($this->description);
+  }
+
+  //
+
+  public function getDescriptionShort(): string 
+  {
+    return Sanitize::noHTML(Sanitize::length($this->description_short, self::COLUMN['description_short']['max_display']));
+  }
+
+  //
+
+  public function getCanonicalUrl(): string 
+  {
+    return Sanitize::noHTML($this->canonical_url);
+  }
+
+  //
+
+  public function getConsultantId(): int 
+  {
+    return $this->consultant_id;
+  }
+
+  //
+
+  public function getFeatured(): bool 
+  {
+    return Sanitize::getBoolean($this->featured);
+  }
+
+  //
+
+  public function getCreatedDate(): string 
+  {
+    return Sanitize::noHTML($this->created_date);
+  }
+
+  //
+
+  public function getUpdatedDate(): string 
+  {
+    return Sanitize::noHTML($this->updated_date);
+  }
+
+  // setters
+
+  public function setId(int $id): void 
+  {
+    if ($id > 0)
+    {
+      $this->id = $id;
+    }
+  }
+
+  //
+
+  public function setTitle(string $title): void 
+  {
+    if (Validate::strLength($title, ['min' => self::COLUMN['title']['min_length'], 'max' => self::COLUMN['title']['max_length']]))
+    {
+      $this->title = $title;
+      $this->setTitleUrl($title);
+    }
+  }
+
+  //
+
+  private function setTitleUrl(string $title_url): void 
+  {
+    if (Validate::strLength($title_url, ['min' => self::COLUMN['title_url']['min_length'], 'max' => self::COLUMN['title_url']['max_length']]))
+    {
+      $this->title_url = Sanitize::slugify($title_url);
+
+      //
+
+      if (isset($this->id))
+      {
+        $this->setCanonicalUrl(Config::getInstance()->getSiteUrl() . self::TABLE . '/' . $this->id . '/' . $this->title_url);
+      }
+    }
+  }
+
+  //
+
+  public function setDescription(string $description): void 
+  {
+    if (Validate::strLength($description, ['min' => self::COLUMN['description']['min_length']]))
+    {
+      $this->description = $description;
+    }
+  }
+
+  //
+
+  public function setDescriptionShort(string $description_short): void 
+  {
+    if (Validate::strLength($description_short, ['min' => self::COLUMN['description_short']['min_length'], 'max' => self::COLUMN['description_short']['max_length']]))
+    {
+      $this->description_short = $description_short;
+    }
+  }
+
+  //
+
+  private function setCanonicalUrl(string $canonical_url): void 
+  {
+    if (!filter_var($canonical_url, FILTER_VALIDATE_URL))
+    {
+      throw new \InvalidArgumentException('Canonical url is invalid: ' . $canonical_url);
+    }
+    else
+    {
+      $this->canonical_url = $canonical_url;
+    }
+  }
+
+  //
+
+  public function setImage(string $image): void 
+  {
+    $this->image = $image;
+  }
+
+  //
+
+  public function setConsultantId(int $consultant_id): void 
+  {
+    if ($consultant_id > 0)
+    {
+      $this->consultant_id = $consultant_id;
+    }
+  }
+
+  //
+
+  public function setFeatured(bool $featured): void 
+  {
+    $this->featured = Sanitize::setBoolean($featured);
   }
 }

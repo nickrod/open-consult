@@ -45,11 +45,11 @@ class Config extends Singleton
 
   // db settings ini
 
-  private $db_settings = '/usr/local/include/simpleconsulting.ini';
+  private $db_settings;
 
   // site url
 
-  private $site_url = "https://www.simpleconsulting.io/";
+  private $site_url;
 
   // constructor
 
