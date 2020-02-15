@@ -133,11 +133,12 @@ CREATE INDEX idx_account_active_updated_date ON account_active(updated_date);
 CREATE TABLE account_auth (
   id SERIAL PRIMARY KEY,
   selector TEXT CHECK(TRIM(selector) <> ''),
-  hashed_validator TEXT CHECK(TRIM(hashed_validator) <> ''),
+  validator TEXT CHECK(TRIM(validator) <> ''),
   account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
   ip INET NOT NULL,
   authenticated BOOL NOT NULL DEFAULT FALSE,
   enabled BOOL NOT NULL DEFAULT TRUE,
+  expired_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 year',
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(selector)
 );
@@ -148,6 +149,7 @@ CREATE INDEX idx_account_auth_account_id ON account_auth(account_id);
 CREATE INDEX idx_account_auth_ip ON account_auth(ip);
 CREATE INDEX idx_account_auth_authenticated ON account_auth(authenticated);
 CREATE INDEX idx_account_auth_enabled ON account_auth(enabled);
+CREATE INDEX idx_account_auth_expired_date ON account_auth(expired_date);
 CREATE INDEX idx_account_auth_created_date ON account_auth(created_date);
 
 --
